@@ -177,7 +177,6 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__provideFile()
     Tp::PendingOperation* provideFileOperation = channel->provideFile(file);
     q->connect(provideFileOperation, SIGNAL(finished(Tp::PendingOperation*)),
                q, SLOT(__k__onProvideFileFinished(Tp::PendingOperation*)));
-    addOperation(provideFileOperation);
 }
 
 void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelTransferredBytesChanged(qulonglong count)

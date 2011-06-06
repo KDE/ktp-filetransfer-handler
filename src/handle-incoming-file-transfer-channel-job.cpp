@@ -141,7 +141,6 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onSetUrlOperationFinished
     Tp::PendingOperation* acceptFileOperation = channel->acceptFile(offset, file);
     q->connect(acceptFileOperation, SIGNAL(finished(Tp::PendingOperation*)),
                q, SLOT(__k__onAcceptFileFinished(Tp::PendingOperation*)));
-    addOperation(acceptFileOperation);
 }
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStateChanged(Tp::FileTransferState state,
