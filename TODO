@@ -1,0 +1,13 @@
+General:
+ * Exit after a couple of seconds if no other file transfer is received
+ * Use Nepomuk describeResource and storeResource to send somehow an additional
+   trig or rdf file.
+ * Stop transfer button.
+
+Incoming file transfers
+ * Show a dialog (overwrite/rename/resume) if file exists.
+ * Configuration of the download directory from some ui.
+ * File transfer support in the approver.
+
+Outgoing file transfers
+ * Find ot why they don't work.

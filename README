@@ -1,0 +1,28 @@
+This is the Telepathy-KDE file transfer handler
+
+It basically does 2 thigs
+ * Send files to your contact
+ * Receive files from your contact
+
+It doesn't set any filter on the mime type, therefore, it should catch all the
+file transfer channels that aren't received by any other handler filtering
+on mimetype.
+
+
+To compile it you will need at least Telepathy-Qt4 >= 0.7.1 or the latest
+git version.
+
+
+
+WARNING: At the moment it just works for incoming file transfers and will
+         overwrite any file in the $HOME/Download directory which has the same
+         name as the file that you are receiving, so please ensure that you
+         don't have any valuable file there.
+
+You can modify the download directory by adding in your
+.kde/share/config/ktelepathyrc file in the section [File Transfers] the
+variable downloadDirectory
+
+[File Transfers]
+downloadDirectory=<download path>
+

@@ -1,6 +1,4 @@
 /*
- * This file is part of telepathy-contactslist-prototype
- *
  * Copyright (C) 2009-2010 Collabora Ltd. <info@collabora.co.uk>
  *   @Author Dario Freddi <dario.freddi@collabora.co.uk>
  *
