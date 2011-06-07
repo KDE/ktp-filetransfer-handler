@@ -63,6 +63,7 @@ HandleIncomingFileTransferChannelJob::HandleIncomingFileTransferChannelJob(Tp::I
     if (channel.isNull())
     {
         kError() << "Channel cannot be NULL"; // TODO print a serious message
+        d->__k__onInvalidated();
         // TODO set error
     }
 
@@ -70,6 +71,7 @@ HandleIncomingFileTransferChannelJob::HandleIncomingFileTransferChannelJob(Tp::I
     if (!channel->isReady(Tp::Features() << Tp::FileTransferChannel::FeatureCore))
     {
         kError() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore"; // TODO print a serious message
+        d->__k__onInvalidated();
         // TODO set error
     }
 
@@ -176,6 +178,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onAcceptFileFinished(Tp::
     if (op->isError()) {
         kWarning() << "Unable to accept file -" <<
             op->errorName() << ":" << op->errorMessage();
+        //TODO set error
         __k__onInvalidated();
         return;
     }

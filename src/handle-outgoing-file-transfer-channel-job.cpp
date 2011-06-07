@@ -60,6 +60,7 @@ HandleOutgoingFileTransferChannelJob::HandleOutgoingFileTransferChannelJob(Tp::O
     {
         kError() << "Channel cannot be NULL"; // TODO print a serious message
         // TODO set error
+        d->__k__onInvalidated();
     }
 
     Tp::Features features = Tp::Features() << Tp::FileTransferChannel::FeatureCore;
@@ -67,6 +68,7 @@ HandleOutgoingFileTransferChannelJob::HandleOutgoingFileTransferChannelJob(Tp::O
     {
         kError() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore"; // TODO print a serious message
         // TODO set error
+        d->__k__onInvalidated();
     }
 
     connect(channel.data(),
@@ -196,6 +198,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onProvideFileFinished(Tp:
     if (op->isError()) {
         kWarning() << "Unable to provide file - " <<
             op->errorName() << ":" << op->errorMessage();
+        //TODO Set error
         __k__onInvalidated();
         return;
     }
