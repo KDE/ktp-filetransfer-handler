@@ -76,15 +76,14 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
     foreach(const Tp::ChannelPtr &channel, channels) {
         kDebug() << "Handling new file transfer";
 
-        QVariantMap properties = channel->immutableProperties();
-        kDebug() << properties;
 
         KJob* job = NULL;
         if (Tp::IncomingFileTransferChannelPtr incomingFileTransferChannel = Tp::IncomingFileTransferChannelPtr::dynamicCast(channel)) {
             m_jobCount.fetchAndAddOrdered(1);
             context->setFinished();
 
-            kDebug() << "Incoming File Transfer";
+            kDebug() << "Incoming File Transfer:";
+            kDebug() << channel->immutableProperties();
 
             KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
             KConfigGroup filetransferConfig = config->group(QLatin1String("File Transfers"));
@@ -103,6 +102,10 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
             }
             m_jobCount.fetchAndAddOrdered(1);
             context->setFinished();
+
+            kDebug() << "Outgoing File Transfer:";
+            kDebug() << channel->immutableProperties();
+
             job = new HandleOutgoingFileTransferChannelJob(outgoingFileTransferChannel, this);
         } else {
             context->setFinishedWithError(QLatin1String(TELEPATHY_QT4_ERROR_INCONSISTENT),
