@@ -22,6 +22,8 @@
 #include <KAboutData>
 #include <KCmdLineArgs>
 #include <KApplication>
+#include <TelepathyQt4/ClientRegistrar>
+#include <TelepathyQt4/FileTransferChannel>
 
 int main(int argc, char* argv[])
 {
@@ -41,7 +43,25 @@ int main(int argc, char* argv[])
     Tp::enableWarnings(true);
 
 
+    Tp::AccountFactoryPtr accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus());
+
+    Tp::ConnectionFactoryPtr  connectionFactory = Tp::ConnectionFactory::create(QDBusConnection::sessionBus());
+
+    Tp::ChannelFactoryPtr channelFactory = Tp::ChannelFactory::create(QDBusConnection::sessionBus());
+    channelFactory->addCommonFeatures(Tp::Channel::FeatureCore);
+    channelFactory->addFeaturesForIncomingFileTransfers(Tp::FileTransferChannel::FeatureCore);
+    channelFactory->addFeaturesForOutgoingFileTransfers(Tp::FileTransferChannel::FeatureCore);
+
+    Tp::ContactFactoryPtr contactFactory = Tp::ContactFactory::create();
+
+    Tp::ClientRegistrarPtr registrar = Tp::ClientRegistrar::create(accountFactory,
+                                                                   connectionFactory,
+                                                                   channelFactory,
+                                                                   contactFactory);
+
     Tp::SharedPtr<FileTransferHandler> fth = Tp::SharedPtr<FileTransferHandler>(new FileTransferHandler);
+    registrar->registerClient(Tp::AbstractClientPtr(fth),
+                              QLatin1String("KDE.FileTransfer"));
 
     return app.exec();
 }

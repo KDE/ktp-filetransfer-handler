@@ -49,9 +49,7 @@ private Q_SLOTS:
     void onInfoMessage(KJob* job, const QString &plain, const QString &rich);
     void handleResult(KJob* job);
 
-
 private:
-    Tp::ClientRegistrarPtr registrar;
 };
 
 #endif // TELEPATHY_KDE_FILETRANSFER_HANDLER_H

@@ -19,7 +19,6 @@
 #include "handle-incoming-file-transfer-channel-job.h"
 #include "handle-outgoing-file-transfer-channel-job.h"
 
-#include <TelepathyQt4/ClientRegistrar>
 #include <TelepathyQt4/ChannelFactory>
 #include <TelepathyQt4/ChannelClassSpecList>
 #include <TelepathyQt4/ChannelClassSpec>
@@ -44,24 +43,6 @@ FileTransferHandler::FileTransferHandler(QObject *parent) : QObject(parent),
     Tp::AbstractClientHandler(Tp::ChannelClassSpecList() << Tp::ChannelClassSpec::incomingFileTransfer()
                                                          << Tp::ChannelClassSpec::outgoingFileTransfer())
 {
-    Tp::AccountFactoryPtr accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus());
-
-    Tp::ConnectionFactoryPtr  connectionFactory = Tp::ConnectionFactory::create(QDBusConnection::sessionBus());
-
-    Tp::ChannelFactoryPtr channelFactory = Tp::ChannelFactory::create(QDBusConnection::sessionBus());
-    channelFactory->addCommonFeatures(Tp::Channel::FeatureCore);
-    channelFactory->addFeaturesForIncomingFileTransfers(Tp::FileTransferChannel::FeatureCore);
-    channelFactory->addFeaturesForOutgoingFileTransfers(Tp::FileTransferChannel::FeatureCore);
-
-    Tp::ContactFactoryPtr contactFactory = Tp::ContactFactory::create();
-
-
-    registrar = Tp::ClientRegistrar::create(accountFactory,
-                                            connectionFactory,
-                                            channelFactory,
-                                            contactFactory);
-    registrar->registerClient(Tp::AbstractClientPtr(Tp::SharedPtr<FileTransferHandler>(this)),
-                              QLatin1String("KDE.FileTransfer"));
 }
 
 
