@@ -1,5 +1,4 @@
 General:
- * Exit after a couple of seconds if no other file transfer is received
  * Use Nepomuk describeResource and storeResource to send somehow an additional
    trig or rdf file.
  * Stop transfer button.

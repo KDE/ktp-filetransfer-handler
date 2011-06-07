@@ -37,6 +37,7 @@ int main(int argc, char* argv[])
     // Add --debug as commandline option
     KCmdLineOptions options;
     options.add("debug", ki18n("Show telepathy debugging information"));
+    options.add("persist", ki18n("Persistant mode (doesn't exit on timeout)"));
     KCmdLineArgs::addCmdLineOptions(options);
 
     KCmdLineArgs::init(argc, argv, &aboutData);
@@ -64,9 +65,12 @@ int main(int argc, char* argv[])
                                                                    channelFactory,
                                                                    contactFactory);
 
-    Tp::SharedPtr<FileTransferHandler> fth = Tp::SharedPtr<FileTransferHandler>(new FileTransferHandler);
+    Tp::SharedPtr<FileTransferHandler> fth = Tp::SharedPtr<FileTransferHandler>(
+            new FileTransferHandler(KCmdLineArgs::parsedArgs()->isSet("persist")));
     registrar->registerClient(Tp::AbstractClientPtr(fth),
                               QLatin1String("KDE.FileTransfer"));
+
+    QTimer::singleShot(2000, fth.data(), SLOT(onTimeout()));
 
     return app.exec();
 }

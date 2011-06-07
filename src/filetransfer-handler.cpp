@@ -37,11 +37,15 @@
 #include <KNotification>
 #include <kio/global.h>
 #include <kjobtrackerinterface.h>
+#include <QApplication>
 
 
-FileTransferHandler::FileTransferHandler(QObject *parent) : QObject(parent),
-    Tp::AbstractClientHandler(Tp::ChannelClassSpecList() << Tp::ChannelClassSpec::incomingFileTransfer()
-                                                         << Tp::ChannelClassSpec::outgoingFileTransfer())
+FileTransferHandler::FileTransferHandler(bool persist, QObject *parent)
+    : QObject(parent),
+      Tp::AbstractClientHandler(Tp::ChannelClassSpecList() << Tp::ChannelClassSpec::incomingFileTransfer()
+                                                           << Tp::ChannelClassSpec::outgoingFileTransfer()),
+      m_persist(persist),
+      m_jobCount(0)
 {
 }
 
@@ -77,6 +81,7 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
 
         KJob* job = NULL;
         if (Tp::IncomingFileTransferChannelPtr incomingFileTransferChannel = Tp::IncomingFileTransferChannelPtr::dynamicCast(channel)) {
+            m_jobCount.fetchAndAddOrdered(1);
             context->setFinished();
 
             kDebug() << "Incoming File Transfer";
@@ -96,6 +101,7 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
                 context->setFinishedWithError(QLatin1String(TELEPATHY_QT4_ERROR_INCONSISTENT),
                                               QLatin1String("Cannot handle outgoing file transfer without URI"));
             }
+            m_jobCount.fetchAndAddOrdered(1);
             context->setFinished();
             job = new HandleOutgoingFileTransferChannelJob(outgoingFileTransferChannel, this);
         } else {
@@ -132,5 +138,15 @@ void FileTransferHandler::handleResult(KJob* job)
     if ( job->error() ) {
         kWarning() << job->errorString();
         // TODO do something;
+    }
+
+    QTimer::singleShot(2000, this, SLOT(onTimeout()));
+}
+
+void FileTransferHandler::onTimeout()
+{
+    if (!m_persist && m_jobCount.fetchAndAddOrdered(-1) <= 1) {
+        kDebug() << "Exiting";
+        QApplication::quit();
     }
 }
