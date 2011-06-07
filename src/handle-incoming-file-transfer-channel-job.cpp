@@ -115,7 +115,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
     kDebug() << "File name:" << url;
 
     file = new QFile(url.toLocalFile(), q->parent());
-    kDebug() << i18n("Saving file as") << file->fileName();
+    kDebug() << "Saving file as" << file->fileName();
 
     //TODO check if file already exists and if file should be overwritten, resumed or renamed
     //     (also set offset accordingly)
@@ -132,7 +132,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onSetUrlOperationFinished
     Q_Q(HandleIncomingFileTransferChannelJob);
 
     if (op->isError()) {
-        kWarning() << i18n("Unable to set the URI") << "-" <<
+        kWarning() << "Unable to set the URI -" <<
             op->errorName() << ":" << op->errorMessage();
         __k__onInvalidated();
         return;
@@ -149,10 +149,10 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
     kDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
-    kDebug() << i18n("File transfer channel state changed to") << state << i18n("with reason") << stateReason;
+    kDebug() << "File transfer channel state changed to" << state << "with reason" << stateReason;
     transferCompleted = (state == Tp::FileTransferStateCompleted);
     if (transferCompleted) {
-        kDebug() << i18n("Transfer completed, saved at") << file->fileName();
+        kDebug() << "Transfer completed, saved at" << file->fileName();
         Q_EMIT q->infoMessage(q, i18n("Transfer completed!"));
 
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
@@ -164,9 +164,9 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelTran
     kDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
-    kDebug().nospace() << i18n("Receiving") << channel->fileName() << "-"
-                       << i18n("transferred bytes") << "=" << count << " ("
-                       << ((int) (((double) count / channel->size()) * 100)) << "%" << i18n("done") << ")";
+    kDebug().nospace() << "Receiving" << channel->fileName() << " - "
+                       << "transferred bytes" << " = " << count << " ("
+                       << ((int) (((double) count / channel->size()) * 100)) << "% done)";
     Q_EMIT q->infoMessage(q, i18n("Transferred bytes"));
 }
 
@@ -174,7 +174,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onAcceptFileFinished(Tp::
 {
     kDebug();
     if (op->isError()) {
-        kWarning() << i18n("Unable to accept file") << "-" <<
+        kWarning() << "Unable to accept file -" <<
             op->errorName() << ":" << op->errorMessage();
         __k__onInvalidated();
         return;
@@ -185,7 +185,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onInvalidated()
 {
     Q_Q(HandleIncomingFileTransferChannelJob);
 
-    kWarning() << i18n("File transfer invalidated!");
+    kWarning() << "File transfer invalidated!";
     Q_EMIT q->infoMessage(q, i18n("File transfer invalidated!"));
 
     QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));

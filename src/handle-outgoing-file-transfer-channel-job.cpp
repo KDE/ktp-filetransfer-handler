@@ -122,22 +122,22 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
     kDebug();
     Q_Q(HandleOutgoingFileTransferChannelJob);
 
-    kDebug() << i18n("File transfer channel state changed to") << state << i18n("with reason") << stateReason;
+    kDebug() << "File transfer channel state changed to" << state << "with reason" << stateReason;
 
     switch (state)
     {
         case Tp::FileTransferStateNone:
             // This is bad
-            kWarning() << i18n("An error occurred.");
+            kWarning() << "An error occurred.";
             q->setError(KTelepathy::InvalidOperationError);
             QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         case Tp::FileTransferStateCompleted:
-            kDebug() << i18n("Transfer completed");
+            kDebug() << "Transfer completed";
             Q_EMIT q->infoMessage(q, i18n("Transfer completed"));
             QTimer::singleShot(0, q, SLOT(__k__doEmitResult())); //TODO here?
             break;
         case Tp::FileTransferStateCancelled:
-            kWarning() << i18n("Transfer was canceled.");
+            kWarning() << "Transfer was canceled.";
             q->setError(KTelepathy::InvalidOperationError); //TODO
             q->setErrorText(i18n("Transfer was canceled."));
             QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
@@ -172,7 +172,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__provideFile()
     }
 
     file = new QFile(uri.toLocalFile(), q->parent());
-    kDebug() << i18n("Providing file") << file->fileName();
+    kDebug() << "Providing file" << file->fileName();
 
     Tp::PendingOperation* provideFileOperation = channel->provideFile(file);
     q->connect(provideFileOperation, SIGNAL(finished(Tp::PendingOperation*)),
@@ -184,9 +184,9 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelTran
     kDebug();
     Q_Q(HandleOutgoingFileTransferChannelJob);
 
-    kDebug().nospace() << i18n("Receiving") << channel->fileName() << "-"
-                       << i18n("Transferred bytes") << "=" << count << " ("
-                       << ((int) (((double) count / channel->size()) * 100)) << "%" << i18n("done") << ")";
+    kDebug().nospace() << "Receiving" << channel->fileName() << " - "
+                       << "Transferred bytes = " << count << " ("
+                       << ((int) (((double) count / channel->size()) * 100)) << "% done)";
     Q_EMIT q->infoMessage(q, i18n("Transferred bytes"));
 }
 
@@ -194,7 +194,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onProvideFileFinished(Tp:
 {
     kDebug();
     if (op->isError()) {
-        kWarning() << i18n("Unable to provide file") << "-" <<
+        kWarning() << "Unable to provide file - " <<
             op->errorName() << ":" << op->errorMessage();
         __k__onInvalidated();
         return;
@@ -205,7 +205,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onInvalidated()
 {
     Q_Q(HandleOutgoingFileTransferChannelJob);
 
-    kWarning() << i18n("File transfer invalidated!");
+    kWarning() << "File transfer invalidated!";
     Q_EMIT q->infoMessage(q, i18n("File transfer invalidated!"));
 
     QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
