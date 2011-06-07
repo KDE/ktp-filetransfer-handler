@@ -19,24 +19,19 @@
 #include "handle-incoming-file-transfer-channel-job.h"
 #include "handle-outgoing-file-transfer-channel-job.h"
 
-#include <TelepathyQt4/ChannelFactory>
 #include <TelepathyQt4/ChannelClassSpecList>
-#include <TelepathyQt4/ChannelClassSpec>
-#include <TelepathyQt4/Channel>
-#include <TelepathyQt4/FileTransferChannel>
 #include <TelepathyQt4/IncomingFileTransferChannel>
 #include <TelepathyQt4/OutgoingFileTransferChannel>
-#include <TelepathyQt4/PendingOperation>
-#include <TelepathyQt4/Constants>
 
 #include <KSharedConfig>
 #include <KConfigGroup>
-#include <KDebug>
 #include <KLocalizedString>
 #include <KJob>
-#include <KNotification>
+// #include <KNotification>
 #include <kio/global.h>
 #include <kjobtrackerinterface.h>
+#include <KDebug>
+
 #include <QApplication>
 
 
