@@ -34,12 +34,17 @@ int main(int argc, char* argv[])
     aboutData.addAuthor(ki18n("Daniele E. Domenichelli"), ki18n("Developer"), "daniele.domenichelli@gmail.com");
     aboutData.setProductName("telepathy/filetransfer");
 
+    // Add --debug as commandline option
+    KCmdLineOptions options;
+    options.add("debug", ki18n("Show telepathy debugging information"));
+    KCmdLineArgs::addCmdLineOptions(options);
+
     KCmdLineArgs::init(argc, argv, &aboutData);
     KUniqueApplication app;
 
     Tp::registerTypes();
     //Enable telepathy-Qt4 debug
-    Tp::enableDebug(true);
+    Tp::enableDebug(KCmdLineArgs::parsedArgs()->isSet("debug"));
     Tp::enableWarnings(true);
 
 
