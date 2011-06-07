@@ -21,7 +21,7 @@
 
 #include <KAboutData>
 #include <KCmdLineArgs>
-#include <KApplication>
+#include <KUniqueApplication>
 #include <TelepathyQt4/ClientRegistrar>
 #include <TelepathyQt4/FileTransferChannel>
 
@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
     aboutData.setProductName("telepathy/filetransfer");
 
     KCmdLineArgs::init(argc, argv, &aboutData);
-    KApplication app;
+    KUniqueApplication app;
 
     Tp::registerTypes();
     //Enable telepathy-Qt4 debug
