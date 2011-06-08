@@ -25,6 +25,7 @@
 #include <KLocalizedString>
 #include <KDebug>
 #include <KUrl>
+#include <kio/renamedialog.h>
 
 #include <TelepathyQt4/IncomingFileTransferChannel>
 #include <TelepathyQt4/PendingReady>
@@ -121,12 +122,45 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
     url.setScheme(QLatin1String("file"));
     kDebug() << "File name:" << url;
 
+    QFileInfo fileInfo(url.toLocalFile());
+    if (fileInfo.exists()) // TODO check if it is a dir?
+    {
+        KIO::RenameDialog renameDialog(0,
+                                       i18n("Incoming file exists"),
+                                       KUrl(), //TODO
+                                       url,
+                                       KIO::M_OVERWRITE,
+                                       fileInfo.size(),
+                                       channel->size(),
+                                       fileInfo.created().toTime_t(),
+                                       time_t(-1),
+                                       fileInfo.lastModified().toTime_t(),
+                                       channel->lastModificationTime().toTime_t());
+        renameDialog.exec();
+        switch (renameDialog.result())
+        {
+            case KIO::R_CANCEL:
+                // TODO Cancel file transfer and close channel
+                __k__doEmitResult();
+                return;
+            case KIO::R_RENAME:
+                url = renameDialog.newDestUrl();
+                break;
+            case KIO::R_OVERWRITE:
+                break;
+            default:
+                //TODO Set error
+                __k__doEmitResult();
+        }
+    }
+
+    // TODO check if a .part file already exists ask user if file should be
+    //      resumed and set offset accordingly
+    offset = 0;
+
     file = new QFile(url.toLocalFile(), q->parent());
     kDebug() << "Saving file as" << file->fileName();
 
-    //TODO check if file already exists and if file should be overwritten, resumed or renamed
-    //     (also set offset accordingly)
-    offset = 0;
 
     Tp::PendingOperation* setUrlOperation = channel->setUri(url.url());
     q->connect(setUrlOperation, SIGNAL(finished(Tp::PendingOperation*)),
