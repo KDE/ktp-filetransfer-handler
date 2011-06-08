@@ -186,7 +186,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelTran
     kDebug();
     Q_Q(HandleOutgoingFileTransferChannelJob);
 
-    kDebug().nospace() << "Receiving" << channel->fileName() << " - "
+    kDebug().nospace() << "Sending " << channel->fileName() << " - "
                        << "Transferred bytes = " << count << " ("
                        << ((int) (((double) count / channel->size()) * 100)) << "% done)";
     Q_EMIT q->infoMessage(q, i18n("Transferred bytes"));
@@ -206,6 +206,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onProvideFileFinished(Tp:
 
 void HandleOutgoingFileTransferChannelJobPrivate::__k__onInvalidated()
 {
+    kDebug();
     Q_Q(HandleOutgoingFileTransferChannelJob);
 
     kWarning() << "File transfer invalidated!";

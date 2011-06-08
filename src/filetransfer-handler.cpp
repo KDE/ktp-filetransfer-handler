@@ -133,6 +133,7 @@ void FileTransferHandler::onInfoMessage(KJob* job, const QString &plain, const Q
 
 void FileTransferHandler::handleResult(KJob* job)
 {
+    kDebug();
     if ( job->error() ) {
         kWarning() << job->errorString();
         // TODO do something;

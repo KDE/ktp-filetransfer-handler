@@ -58,6 +58,7 @@ HandleIncomingFileTransferChannelJob::HandleIncomingFileTransferChannelJob(Tp::I
                                                                            QObject* parent)
     : TelepathyBaseJob(*new HandleIncomingFileTransferChannelJobPrivate(), parent)
 {
+    kDebug();
     Q_D(HandleIncomingFileTransferChannelJob);
 
     if (channel.isNull())
@@ -81,20 +82,24 @@ HandleIncomingFileTransferChannelJob::HandleIncomingFileTransferChannelJob(Tp::I
 
 HandleIncomingFileTransferChannelJob::~HandleIncomingFileTransferChannelJob()
 {
+    kDebug();
 }
 
 void HandleIncomingFileTransferChannelJob::start()
 {
+    kDebug();
     QTimer::singleShot(0, this, SLOT(__k__start()));
 }
 
 HandleIncomingFileTransferChannelJobPrivate::HandleIncomingFileTransferChannelJobPrivate()
     : file(0)
 {
+    kDebug();
 }
 
 HandleIncomingFileTransferChannelJobPrivate::~HandleIncomingFileTransferChannelJobPrivate()
 {
+    kDebug();
 }
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__start()
@@ -166,7 +171,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelTran
     kDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
-    kDebug().nospace() << "Receiving" << channel->fileName() << " - "
+    kDebug().nospace() << "Receiving " << channel->fileName() << " - "
                        << "transferred bytes" << " = " << count << " ("
                        << ((int) (((double) count / channel->size()) * 100)) << "% done)";
     Q_EMIT q->infoMessage(q, i18n("Transferred bytes"));
@@ -186,6 +191,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onAcceptFileFinished(Tp::
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onInvalidated()
 {
+    kDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
     kWarning() << "File transfer invalidated!";
