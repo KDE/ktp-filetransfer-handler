@@ -1,3 +1,12 @@
+telepathy-kde file-transfer-handler (2011-06-08) UNRELEASED
+===========================================================
+
+ * Add --debug and --persist command line options (drdanz)
+ * Exit after 2 seconds if no channels are received (drdanz)
+ * Show an overwrite/rename dialog on incoming file transfers if the file
+   already exists. (drdanz)
+ * Don't stop the jobs before the file transfer has actually finished (gkiagia)
+
 telepathy-kde file-transfer-handler (2011-06-06) UNRELEASED
 ===========================================================
 
