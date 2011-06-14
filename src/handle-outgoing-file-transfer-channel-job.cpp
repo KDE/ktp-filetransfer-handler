@@ -58,17 +58,17 @@ HandleOutgoingFileTransferChannelJob::HandleOutgoingFileTransferChannelJob(Tp::O
 
     if (channel.isNull())
     {
-        kError() << "Channel cannot be NULL"; // TODO print a serious message
-        // TODO set error
-        d->__k__onInvalidated();
+        kError() << "Channel cannot be NULL";
+        setError(KTelepathy::NullChannel);
+        setErrorText(i18n("Invalid channel"));
     }
 
     Tp::Features features = Tp::Features() << Tp::FileTransferChannel::FeatureCore;
     if (!channel->isReady(Tp::Features() << Tp::FileTransferChannel::FeatureCore))
     {
-        kError() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore"; // TODO print a serious message
-        // TODO set error
-        d->__k__onInvalidated();
+        kError() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore";
+        setError(KTelepathy::FeatureNotReady);
+        setErrorText(i18n("Channel is not ready"));
     }
 
     connect(channel.data(),
@@ -76,7 +76,6 @@ HandleOutgoingFileTransferChannelJob::HandleOutgoingFileTransferChannelJob(Tp::O
             SLOT(__k__onInvalidated()));
 
     d->channel = channel;
-    kDebug() << "END";
 }
 
 HandleOutgoingFileTransferChannelJob::~HandleOutgoingFileTransferChannelJob()
@@ -106,6 +105,11 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__start()
     kDebug();
     Q_Q(HandleOutgoingFileTransferChannelJob);
 
+    if (q->error()) {
+        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+        return;
+    }
+
     q->connect(channel.data(),
                SIGNAL(stateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)),
                SLOT(__k__onFileTransferChannelStateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)));
@@ -114,7 +118,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__start()
                SLOT(__k__onFileTransferChannelTransferredBytesChanged(qulonglong)));
 
     if (channel->state() == Tp::FileTransferStateAccepted) {
-        __k__provideFile();
+        QTimer::singleShot(0, q, SLOT(__k__provideFile()));
     }
 }
 
@@ -131,7 +135,8 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
         case Tp::FileTransferStateNone:
             // This is bad
             kWarning() << "An error occurred.";
-            q->setError(KTelepathy::InvalidOperationError);
+            q->setError(KTelepathy::TelepathyErrorError);
+            q->setErrorText(i18n("An error occurred"));
             QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         case Tp::FileTransferStateCompleted:
             kDebug() << "Transfer completed";
@@ -140,7 +145,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
             break;
         case Tp::FileTransferStateCancelled:
             kWarning() << "Transfer was canceled.";
-            q->setError(KTelepathy::InvalidOperationError); //TODO
+            q->setError(KTelepathy::FileTransferCancelled); //TODO
             q->setErrorText(i18n("Transfer was canceled."));
             QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
             break;
@@ -162,14 +167,16 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__provideFile()
     if (uri.isEmpty())
     {
         qWarning() << "URI property missing";
-        // TODO set error
+        q->setError(KTelepathy::UriPropertyMissing);
+        q->setErrorText(i18n("URI property is missing"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
     }
     if (uri.scheme() != QLatin1String("file"))
     {
-        qWarning() << "Not a local file";
         // TODO handle this!
-        // TODO set error
+        qWarning() << "Not a local file";
+        q->setError(KTelepathy::NotALocalFile);
+        q->setErrorText(i18n("This is not a local file"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
     }
 
@@ -194,13 +201,17 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelTran
 
 void HandleOutgoingFileTransferChannelJobPrivate::__k__onProvideFileFinished(Tp::PendingOperation* op)
 {
+    // This method is called when the "provideFile" operation is finished,
+    // therefore the file was not sent yet.
     kDebug();
+    Q_Q(HandleOutgoingFileTransferChannelJob);
+
     if (op->isError()) {
         kWarning() << "Unable to provide file - " <<
             op->errorName() << ":" << op->errorMessage();
-        //TODO Set error
-        __k__onInvalidated();
-        return;
+        q->setError(KTelepathy::ProvideFileError);
+        q->setErrorText(i18n("Cannot provide file"));
+        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
     }
 }
 

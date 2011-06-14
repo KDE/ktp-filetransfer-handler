@@ -59,8 +59,26 @@ namespace KTelepathy {
         AccountNotOnlineError = 106,
         /** An operation attempted to create a nepomuk resource which already exists */
         ResourceAlreadyExistsError = 107,
+        /** A channel is null */
+        NullChannel = 108,
+        /** A required Tp::Feature is not ready */
+        FeatureNotReady = 109,
+        /** Cannot set the URI property */
+        SetUriFailed = 110,
+        /** Cannot accept file */
+        AcceptFileError = 111,
+        /** File transfer cancelled */
+        FileTransferCancelled = 112,
+        /** URI Property is missing */
+        UriPropertyMissing = 113,
+        /** Non a local file */
+        NotALocalFile = 114,
+        /** Cannot provide file */
+        ProvideFileError = 115,
         /** Telepathy triggered an error */
-        TelepathyErrorError = 200
+        TelepathyErrorError = 200,
+        /** KTelepathy Error */
+        KTelepathyError = 300
     };
 
 class TelepathyBaseJobPrivate;

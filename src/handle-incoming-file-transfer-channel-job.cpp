@@ -64,17 +64,17 @@ HandleIncomingFileTransferChannelJob::HandleIncomingFileTransferChannelJob(Tp::I
 
     if (channel.isNull())
     {
-        kError() << "Channel cannot be NULL"; // TODO print a serious message
-        d->__k__onInvalidated();
-        // TODO set error
+        kError() << "Channel cannot be NULL";
+        setError(KTelepathy::NullChannel);
+        setErrorText(i18n("Invalid channel"));
     }
 
     Tp::Features features = Tp::Features() << Tp::FileTransferChannel::FeatureCore;
     if (!channel->isReady(Tp::Features() << Tp::FileTransferChannel::FeatureCore))
     {
-        kError() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore"; // TODO print a serious message
-        d->__k__onInvalidated();
-        // TODO set error
+        kError() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore";
+        setError(KTelepathy::FeatureNotReady);
+        setErrorText(i18n("Channel is not ready"));
     }
 
     d->channel = channel;
@@ -107,6 +107,11 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
 {
     kDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
+
+    if (q->error()) {
+        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+        return;
+    }
 
     q->connect(channel.data(), SIGNAL(invalidated(Tp::DBusProxy *, const QString &, const QString &)),
                q, SLOT(__k__onInvalidated()));
@@ -141,7 +146,8 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
         {
             case KIO::R_CANCEL:
                 // TODO Cancel file transfer and close channel
-                __k__doEmitResult();
+                channel->cancel();
+                QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
                 return;
             case KIO::R_RENAME:
                 url = renameDialog.newDestUrl();
@@ -150,7 +156,10 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
                 break;
             default:
                 //TODO Set error
-                __k__doEmitResult();
+                kWarning() << "Unknown Error";
+                q->setError(KTelepathy::KTelepathyError);
+                q->setErrorText(i18n("Unknown Error"));
+                QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         }
     }
 
@@ -160,7 +169,6 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
 
     file = new QFile(url.toLocalFile(), q->parent());
     kDebug() << "Saving file as" << file->fileName();
-
 
     Tp::PendingOperation* setUrlOperation = channel->setUri(url.url());
     q->connect(setUrlOperation, SIGNAL(finished(Tp::PendingOperation*)),
@@ -175,7 +183,9 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onSetUrlOperationFinished
     if (op->isError()) {
         kWarning() << "Unable to set the URI -" <<
             op->errorName() << ":" << op->errorMessage();
-        __k__onInvalidated();
+        q->setError(KTelepathy::SetUriFailed);
+        q->setErrorText(i18n("Unable to set the URI"));
+        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         return;
     }
 
@@ -190,6 +200,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
     kDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
+    //TODO Handle other states
     kDebug() << "File transfer channel state changed to" << state << "with reason" << stateReason;
     transferCompleted = (state == Tp::FileTransferStateCompleted);
     if (transferCompleted) {
@@ -213,13 +224,17 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelTran
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onAcceptFileFinished(Tp::PendingOperation* op)
 {
+    // This method is called when the "acceptFile" operation is finished,
+    // therefore the file was not received yet.
     kDebug();
+    Q_Q(HandleIncomingFileTransferChannelJob);
+
     if (op->isError()) {
         kWarning() << "Unable to accept file -" <<
             op->errorName() << ":" << op->errorMessage();
-        //TODO set error
-        __k__onInvalidated();
-        return;
+        q->setError(KTelepathy::AcceptFileError);
+        q->setErrorText(i18n("Unable to accept file"));
+        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
     }
 }
 
