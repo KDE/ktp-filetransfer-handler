@@ -145,7 +145,7 @@ void FileTransferHandler::handleResult(KJob* job)
 void FileTransferHandler::onTimeout()
 {
     if (!m_persist && m_jobCount.fetchAndAddOrdered(-1) <= 1) {
-        kDebug() << "Exiting";
+        kDebug() << "Timeout. Exiting";
         QApplication::quit();
     }
 }

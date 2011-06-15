@@ -23,6 +23,7 @@
 #include <TelepathyQt4/PendingOperation>
 
 #include <KLocalizedString>
+#include <KDebug>
 
 using namespace KTelepathy;
 
@@ -84,6 +85,7 @@ void TelepathyBaseJobPrivate::__k__tpOperationFinished(Tp::PendingOperation* op)
 
 void TelepathyBaseJobPrivate::__k__doEmitResult()
 {
+    kDebug();
     Q_Q(TelepathyBaseJob);
 
     // Before streaming out: are there any telepathy errors?

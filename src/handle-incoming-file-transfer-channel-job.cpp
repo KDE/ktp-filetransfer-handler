@@ -155,7 +155,6 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
             case KIO::R_OVERWRITE:
                 break;
             default:
-                //TODO Set error
                 kWarning() << "Unknown Error";
                 q->setError(KTelepathy::KTelepathyError);
                 q->setErrorText(i18n("Unknown Error"));
