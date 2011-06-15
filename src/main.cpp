@@ -42,6 +42,7 @@ int main(int argc, char* argv[])
 
     KCmdLineArgs::init(argc, argv, &aboutData);
     KUniqueApplication app;
+    app.setQuitOnLastWindowClosed(false);
 
     Tp::registerTypes();
     //Enable telepathy-Qt4 debug
