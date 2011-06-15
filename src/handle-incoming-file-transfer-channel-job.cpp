@@ -159,6 +159,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
                 q->setError(KTelepathy::KTelepathyError);
                 q->setErrorText(i18n("Unknown Error"));
                 QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+                return;
         }
     }
 
