@@ -171,7 +171,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__provideFile()
         q->setErrorText(i18n("URI property is missing"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
     }
-    if (uri.scheme() != QLatin1String("file"))
+    if (!uri.isLocalFile())
     {
         // TODO handle this!
         qWarning() << "Not a local file";
