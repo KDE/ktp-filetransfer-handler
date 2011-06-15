@@ -171,8 +171,9 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
     kDebug() << "Saving file as" << file->fileName();
 
     Tp::PendingOperation* setUrlOperation = channel->setUri(url.url());
-    q->connect(setUrlOperation, SIGNAL(finished(Tp::PendingOperation*)),
-               q, SLOT(__k__onSetUrlOperationFinished(Tp::PendingOperation*)));
+    q->connect(setUrlOperation,
+               SIGNAL(finished(Tp::PendingOperation*)),
+               SLOT(__k__onSetUrlOperationFinished(Tp::PendingOperation*)));
 }
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onSetUrlOperationFinished(Tp::PendingOperation* op)
@@ -190,8 +191,9 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onSetUrlOperationFinished
     }
 
     Tp::PendingOperation* acceptFileOperation = channel->acceptFile(offset, file);
-    q->connect(acceptFileOperation, SIGNAL(finished(Tp::PendingOperation*)),
-               q, SLOT(__k__onAcceptFileFinished(Tp::PendingOperation*)));
+    q->connect(acceptFileOperation,
+               SIGNAL(finished(Tp::PendingOperation*)),
+               SLOT(__k__onAcceptFileFinished(Tp::PendingOperation*)));
 }
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStateChanged(Tp::FileTransferState state,
