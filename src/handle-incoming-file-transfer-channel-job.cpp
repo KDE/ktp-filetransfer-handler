@@ -205,7 +205,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
     transferCompleted = (state == Tp::FileTransferStateCompleted);
     if (transferCompleted) {
         kDebug() << "Transfer completed, saved at" << file->fileName();
-        Q_EMIT q->infoMessage(q, i18n("Transfer completed!"));
+        Q_EMIT q->infoMessage(q, i18n("Transfer completed."));
 
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
     }
@@ -244,7 +244,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onInvalidated()
     Q_Q(HandleIncomingFileTransferChannelJob);
 
     kWarning() << "File transfer invalidated!";
-    Q_EMIT q->infoMessage(q, i18n("File transfer invalidated!"));
+    Q_EMIT q->infoMessage(q, i18n("File transfer invalidated."));
 
     QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
 }

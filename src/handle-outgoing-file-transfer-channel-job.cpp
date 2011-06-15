@@ -221,7 +221,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onInvalidated()
     Q_Q(HandleOutgoingFileTransferChannelJob);
 
     kWarning() << "File transfer invalidated!";
-    Q_EMIT q->infoMessage(q, i18n("File transfer invalidated!"));
+    Q_EMIT q->infoMessage(q, i18n("File transfer invalidated."));
 
     QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
 }

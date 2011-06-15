@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
     // Add --debug as commandline option
     KCmdLineOptions options;
     options.add("debug", ki18n("Show telepathy debugging information"));
-    options.add("persist", ki18n("Persistant mode (doesn't exit on timeout)"));
+    options.add("persist", ki18n("Persistant mode (does not exit on timeout)"));
     KCmdLineArgs::addCmdLineOptions(options);
 
     KCmdLineArgs::init(argc, argv, &aboutData);
