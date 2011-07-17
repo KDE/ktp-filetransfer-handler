@@ -21,7 +21,7 @@
 
 #include <KAboutData>
 #include <KCmdLineArgs>
-#include <KUniqueApplication>
+#include <KApplication>
 #include <TelepathyQt4/ClientRegistrar>
 #include <TelepathyQt4/FileTransferChannel>
 
@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
     KCmdLineArgs::addCmdLineOptions(options);
 
     KCmdLineArgs::init(argc, argv, &aboutData);
-    KUniqueApplication app;
+    KApplication app;
     app.setQuitOnLastWindowClosed(false);
 
     Tp::registerTypes();
