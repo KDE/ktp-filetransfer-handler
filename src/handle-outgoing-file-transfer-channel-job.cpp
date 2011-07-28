@@ -138,6 +138,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
             q->setError(KTelepathy::TelepathyErrorError);
             q->setErrorText(i18n("An error occurred"));
             QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+	    break;
         case Tp::FileTransferStateCompleted:
             kDebug() << "Transfer completed";
             Q_EMIT q->infoMessage(q, i18n("Transfer completed"));
