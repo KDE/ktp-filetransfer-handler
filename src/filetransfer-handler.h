@@ -33,7 +33,7 @@ class FileTransferHandler : public QObject, public Tp::AbstractClientHandler
     Q_DISABLE_COPY(FileTransferHandler);
 
 public:
-    FileTransferHandler(QObject* parent = 0);
+    FileTransferHandler(bool persist, QObject* parent = 0);
     virtual ~FileTransferHandler();
 
     virtual bool bypassApproval() const;
@@ -45,9 +45,16 @@ public:
                         const QDateTime &userActionTime,
                         const Tp::AbstractClientHandler::HandlerInfo &handlerInfo);
 
+public Q_SLOTS:
+    void onTimeout();
+
 private Q_SLOTS:
     void onInfoMessage(KJob* job, const QString &plain, const QString &rich);
     void handleResult(KJob* job);
+
+private:
+    bool m_persist;
+    QAtomicInt m_jobCount;
 };
 
 #endif // TELEPATHY_KDE_FILETRANSFER_HANDLER_H

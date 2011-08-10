@@ -35,10 +35,12 @@
 #include <QApplication>
 
 
-FileTransferHandler::FileTransferHandler(QObject *parent)
+FileTransferHandler::FileTransferHandler(bool persist, QObject *parent)
     : QObject(parent),
       Tp::AbstractClientHandler(Tp::ChannelClassSpecList() << Tp::ChannelClassSpec::incomingFileTransfer()
-                                                           << Tp::ChannelClassSpec::outgoingFileTransfer())
+                                                           << Tp::ChannelClassSpec::outgoingFileTransfer()),
+      m_persist(persist),
+      m_jobCount(0)
 {
 }
 
@@ -137,4 +139,12 @@ void FileTransferHandler::handleResult(KJob* job)
     }
 
     QTimer::singleShot(2000, this, SLOT(onTimeout()));
+}
+
+void FileTransferHandler::onTimeout()
+{
+    if (!m_persist && m_jobCount.fetchAndAddOrdered(-1) <= 1) {
+        kDebug() << "Timeout. Exiting";
+        QApplication::quit();
+    }
 }

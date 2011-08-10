@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "control.h"
 #include "filetransfer-handler.h"
 
 #include <TelepathyQt4/Debug>
@@ -45,10 +44,6 @@ int main(int argc, char* argv[])
     KApplication app;
     app.setQuitOnLastWindowClosed(false);
 
-    // Create static Control object before starting anything that could be
-    // multithreaded to avoid problems.
-    new Control(KCmdLineArgs::parsedArgs()->isSet("persist"), &app);
-
     Tp::registerTypes();
     //Enable telepathy-Qt4 debug
     Tp::enableDebug(KCmdLineArgs::parsedArgs()->isSet("debug"));
@@ -71,8 +66,10 @@ int main(int argc, char* argv[])
                                                                    channelFactory,
                                                                    contactFactory);
 
-    Tp::SharedPtr<FileTransferHandler> fth = Tp::SharedPtr<FileTransferHandler>(new FileTransferHandler());
-    registrar->registerClient(Tp::AbstractClientPtr(fth), QLatin1String("KDE.FileTransfer"));
+    Tp::SharedPtr<FileTransferHandler> fth = Tp::SharedPtr<FileTransferHandler>(
+            new FileTransferHandler(KCmdLineArgs::parsedArgs()->isSet("persist")));
+    registrar->registerClient(Tp::AbstractClientPtr(fth),
+                              QLatin1String("KDE.FileTransfer"));
 
     QTimer::singleShot(2000, fth.data(), SLOT(onTimeout()));
 

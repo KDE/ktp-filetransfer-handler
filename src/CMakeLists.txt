@@ -1,6 +1,5 @@
 set (telepathy_kde_filetransfer_handler_SRCS
      main.cpp
-     control.cpp
      filetransfer-handler.cpp
      telepathy-base-job.cpp
      handle-incoming-file-transfer-channel-job.cpp
