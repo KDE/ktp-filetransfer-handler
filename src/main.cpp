@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "control.h"
 #include "filetransfer-handler.h"
 
 #include <TelepathyQt4/Debug>
@@ -34,7 +35,7 @@ int main(int argc, char* argv[])
     aboutData.addAuthor(ki18n("Daniele E. Domenichelli"), ki18n("Developer"), "daniele.domenichelli@gmail.com");
     aboutData.setProductName("telepathy/filetransfer");
 
-    // Add --debug as commandline option
+    // Add --debug as and --persist commandline options
     KCmdLineOptions options;
     options.add("debug", ki18n("Show Telepathy debugging information"));
     options.add("persist", ki18n("Persistant mode (does not exit on timeout)"));
@@ -43,6 +44,10 @@ int main(int argc, char* argv[])
     KCmdLineArgs::init(argc, argv, &aboutData);
     KApplication app;
     app.setQuitOnLastWindowClosed(false);
+
+    // Create static Control object before starting anything that could be
+    // multithreaded to avoid problems.
+    new Control(KCmdLineArgs::parsedArgs()->isSet("persist"), &app);
 
     Tp::registerTypes();
     //Enable telepathy-Qt4 debug
@@ -66,10 +71,8 @@ int main(int argc, char* argv[])
                                                                    channelFactory,
                                                                    contactFactory);
 
-    Tp::SharedPtr<FileTransferHandler> fth = Tp::SharedPtr<FileTransferHandler>(
-            new FileTransferHandler(KCmdLineArgs::parsedArgs()->isSet("persist")));
-    registrar->registerClient(Tp::AbstractClientPtr(fth),
-                              QLatin1String("KDE.FileTransfer"));
+    Tp::SharedPtr<FileTransferHandler> fth = Tp::SharedPtr<FileTransferHandler>(new FileTransferHandler());
+    registrar->registerClient(Tp::AbstractClientPtr(fth), QLatin1String("KDE.FileTransfer"));
 
     QTimer::singleShot(2000, fth.data(), SLOT(onTimeout()));
 
