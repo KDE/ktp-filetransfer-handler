@@ -106,8 +106,7 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
             kDebug() << "If you are reading this, then telepathy is broken";
         }
 
-        if (job)
-        {
+        if (job) {
             KIO::getJobTracker()->registerJob(job);
             connect(job,
                     SIGNAL(infoMessage(KJob*, QString, QString)),
