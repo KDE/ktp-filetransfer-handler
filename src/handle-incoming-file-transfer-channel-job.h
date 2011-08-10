@@ -38,7 +38,7 @@ class HandleIncomingFileTransferChannelJob : public KTelepathy::TelepathyBaseJob
 
 //     // Our Q_PRIVATE_SLOTS who perform the real job
     Q_PRIVATE_SLOT(d_func(), void __k__start())
-    Q_PRIVATE_SLOT(d_func(), void __k__onSetUrlOperationFinished(Tp::PendingOperation* op))
+    Q_PRIVATE_SLOT(d_func(), void __k__onSetUriOperationFinished(Tp::PendingOperation* op))
     Q_PRIVATE_SLOT(d_func(), void __k__onFileTransferChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason))
     Q_PRIVATE_SLOT(d_func(), void __k__onFileTransferChannelTransferredBytesChanged(qulonglong count))
     Q_PRIVATE_SLOT(d_func(), void __k__onAcceptFileFinished(Tp::PendingOperation* op))

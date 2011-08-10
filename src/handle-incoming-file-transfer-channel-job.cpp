@@ -45,7 +45,7 @@ class HandleIncomingFileTransferChannelJobPrivate : public KTelepathy::Telepathy
         QFile* file;
 
         void __k__start();
-        void __k__onSetUrlOperationFinished(Tp::PendingOperation* op);
+        void __k__onSetUriOperationFinished(Tp::PendingOperation* op);
         void __k__onFileTransferChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason);
         void __k__onFileTransferChannelTransferredBytesChanged(qulonglong count);
         void __k__onAcceptFileFinished(Tp::PendingOperation* op);
@@ -170,13 +170,13 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
     file = new QFile(url.toLocalFile(), q->parent());
     kDebug() << "Saving file as" << file->fileName();
 
-    Tp::PendingOperation* setUrlOperation = channel->setUri(url.url());
-    q->connect(setUrlOperation,
+    Tp::PendingOperation* setUriOperation = channel->setUri(url.url());
+    q->connect(setUriOperation,
                SIGNAL(finished(Tp::PendingOperation*)),
-               SLOT(__k__onSetUrlOperationFinished(Tp::PendingOperation*)));
+               SLOT(__k__onSetUriOperationFinished(Tp::PendingOperation*)));
 }
 
-void HandleIncomingFileTransferChannelJobPrivate::__k__onSetUrlOperationFinished(Tp::PendingOperation* op)
+void HandleIncomingFileTransferChannelJobPrivate::__k__onSetUriOperationFinished(Tp::PendingOperation* op)
 {
     kDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
