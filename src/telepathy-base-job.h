@@ -63,8 +63,6 @@ namespace KTelepathy {
         NullChannel = 108,
         /** A required Tp::Feature is not ready */
         FeatureNotReady = 109,
-        /** Cannot set the URI property */
-        SetUriFailed = 110,
         /** Cannot accept file */
         AcceptFileError = 111,
         /** File transfer cancelled */

@@ -182,12 +182,9 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onSetUriOperationFinished
     Q_Q(HandleIncomingFileTransferChannelJob);
 
     if (op->isError()) {
-        kWarning() << "Unable to set the URI -" <<
-            op->errorName() << ":" << op->errorMessage();
-        q->setError(KTelepathy::SetUriFailed);
-        q->setErrorText(i18n("Unable to set the URI"));
-        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
-        return;
+        // We do not want to exit if setUri failed, but we try to send the file
+        // anyway. Anyway we print a message for debugging purposes.
+        kWarning() << "Unable to set the URI -" << op->errorName() << ":" << op->errorMessage();
     }
 
     Tp::PendingOperation* acceptFileOperation = channel->acceptFile(offset, file);
