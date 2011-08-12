@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
                                                                    contactFactory);
 
     Tp::SharedPtr<FileTransferHandler> fth = Tp::SharedPtr<FileTransferHandler>(
-            new FileTransferHandler(KCmdLineArgs::parsedArgs()->isSet("persist")));
+            new FileTransferHandler(KCmdLineArgs::parsedArgs()->isSet("persist"), &app));
     registrar->registerClient(Tp::AbstractClientPtr(fth),
                               QLatin1String("KDE.FileTransfer"));
 
