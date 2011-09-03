@@ -20,7 +20,8 @@
 #include "handle-incoming-file-transfer-channel-job.h"
 #include "telepathy-base-job_p.h"
 
-#include <QTimer>
+#include <QtCore/QTimer>
+#include <QtCore/QPointer>
 
 #include <KLocalizedString>
 #include <KDebug>
@@ -130,19 +131,19 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
     QFileInfo fileInfo(url.toLocalFile());
     if (fileInfo.exists()) // TODO check if it is a dir?
     {
-        KIO::RenameDialog renameDialog(0,
-                                       i18n("Incoming file exists"),
-                                       KUrl(), //TODO
-                                       url,
-                                       KIO::M_OVERWRITE,
-                                       fileInfo.size(),
-                                       channel->size(),
-                                       fileInfo.created().toTime_t(),
-                                       time_t(-1),
-                                       fileInfo.lastModified().toTime_t(),
-                                       channel->lastModificationTime().toTime_t());
-        renameDialog.exec();
-        switch (renameDialog.result())
+        QPointer<KIO::RenameDialog> renameDialog = new KIO::RenameDialog(0,
+                                                                         i18n("Incoming file exists"),
+                                                                         KUrl(), //TODO
+                                                                         url,
+                                                                         KIO::M_OVERWRITE,
+                                                                         fileInfo.size(),
+                                                                         channel->size(),
+                                                                         fileInfo.created().toTime_t(),
+                                                                         time_t(-1),
+                                                                         fileInfo.lastModified().toTime_t(),
+                                                                         channel->lastModificationTime().toTime_t());
+        renameDialog->exec();
+        switch (renameDialog->result())
         {
             case KIO::R_CANCEL:
                 // TODO Cancel file transfer and close channel
@@ -150,7 +151,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
                 QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
                 return;
             case KIO::R_RENAME:
-                url = renameDialog.newDestUrl();
+                url = renameDialog->newDestUrl();
                 break;
             case KIO::R_OVERWRITE:
                 break;
