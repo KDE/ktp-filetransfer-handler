@@ -21,7 +21,7 @@
 #include "telepathy-base-job_p.h"
 
 #include <QtCore/QTimer>
-#include <QtCore/QPointer>
+#include <QtCore/QWeakPointer>
 
 #include <KLocalizedString>
 #include <KDebug>
@@ -131,19 +131,28 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
     QFileInfo fileInfo(url.toLocalFile());
     if (fileInfo.exists()) // TODO check if it is a dir?
     {
-        QPointer<KIO::RenameDialog> renameDialog = new KIO::RenameDialog(0,
-                                                                         i18n("Incoming file exists"),
-                                                                         KUrl(), //TODO
-                                                                         url,
-                                                                         KIO::M_OVERWRITE,
-                                                                         fileInfo.size(),
-                                                                         channel->size(),
-                                                                         fileInfo.created().toTime_t(),
-                                                                         time_t(-1),
-                                                                         fileInfo.lastModified().toTime_t(),
-                                                                         channel->lastModificationTime().toTime_t());
-        renameDialog->exec();
-        switch (renameDialog->result())
+        QWeakPointer<KIO::RenameDialog> renameDialog = new KIO::RenameDialog(0,
+                                                                             i18n("Incoming file exists"),
+                                                                             KUrl(), //TODO
+                                                                             url,
+                                                                             KIO::M_OVERWRITE,
+                                                                             fileInfo.size(),
+                                                                             channel->size(),
+                                                                             fileInfo.created().toTime_t(),
+                                                                             time_t(-1),
+                                                                             fileInfo.lastModified().toTime_t(),
+                                                                             channel->lastModificationTime().toTime_t());
+
+        renameDialog.data()->exec();
+
+        if (!renameDialog)
+        {
+            kWarning() << "Rename dialog was deleted during event loop.";
+            QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+            return;
+        }
+
+        switch (renameDialog.data()->result())
         {
             case KIO::R_CANCEL:
                 // TODO Cancel file transfer and close channel
@@ -151,7 +160,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
                 QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
                 return;
             case KIO::R_RENAME:
-                url = renameDialog->newDestUrl();
+                url = renameDialog.data()->newDestUrl();
                 break;
             case KIO::R_OVERWRITE:
                 break;
@@ -159,9 +168,11 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
                 kWarning() << "Unknown Error";
                 q->setError(KTelepathy::KTelepathyError);
                 q->setErrorText(i18n("Unknown Error"));
+                renameDialog.data()->deleteLater();
                 QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
                 return;
         }
+        renameDialog.data()->deleteLater();
     }
 
     // TODO check if a .part file already exists ask user if file should be
