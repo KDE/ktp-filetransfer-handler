@@ -45,8 +45,8 @@ class HandleOutgoingFileTransferChannelJob : public KTelepathy::TelepathyBaseJob
     Q_PRIVATE_SLOT(d_func(), void __k__onInvalidated())
 
 public:
-    HandleOutgoingFileTransferChannelJob(Tp::OutgoingFileTransferChannelPtr channel,
-                                         QObject* parent = 0);
+    explicit HandleOutgoingFileTransferChannelJob(Tp::OutgoingFileTransferChannelPtr channel,
+                                                  QObject* parent = 0);
     virtual ~HandleOutgoingFileTransferChannelJob();
 
     virtual void start();

@@ -33,7 +33,7 @@ class FileTransferHandler : public QObject, public Tp::AbstractClientHandler
     Q_DISABLE_COPY(FileTransferHandler);
 
 public:
-    FileTransferHandler(bool persist, QObject* parent = 0);
+    explicit FileTransferHandler(bool persist, QObject* parent = 0);
     virtual ~FileTransferHandler();
 
     virtual bool bypassApproval() const;
