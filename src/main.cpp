@@ -22,6 +22,7 @@
 #include <KAboutData>
 #include <KCmdLineArgs>
 #include <KApplication>
+#include <KDebug>
 #include <TelepathyQt4/ClientRegistrar>
 #include <TelepathyQt4/FileTransferChannel>
 
@@ -68,8 +69,10 @@ int main(int argc, char* argv[])
 
     Tp::SharedPtr<FileTransferHandler> fth = Tp::SharedPtr<FileTransferHandler>(
             new FileTransferHandler(KCmdLineArgs::parsedArgs()->isSet("persist"), &app));
-    registrar->registerClient(Tp::AbstractClientPtr(fth),
-                              QLatin1String("KDE.FileTransfer"));
+    if(!registrar->registerClient(Tp::AbstractClientPtr(fth), QLatin1String("KDE.FileTransfer"))) {
+        kDebug() << "File Transfer Handler already running. Exiting";
+        return 1;
+    }
 
     QTimer::singleShot(60000, fth.data(), SLOT(onTimeout()));
 
