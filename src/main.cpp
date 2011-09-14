@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
     registrar->registerClient(Tp::AbstractClientPtr(fth),
                               QLatin1String("KDE.FileTransfer"));
 
-    QTimer::singleShot(2000, fth.data(), SLOT(onTimeout()));
+    QTimer::singleShot(60000, fth.data(), SLOT(onTimeout()));
 
     return app.exec();
 }
