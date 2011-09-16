@@ -68,7 +68,7 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
     Q_UNUSED(userActionTime);
     Q_UNUSED(handlerInfo);
 
-    foreach(const Tp::ChannelPtr &channel, channels) {
+    Q_FOREACH(const Tp::ChannelPtr &channel, channels) {
         kDebug() << "Handling new file transfer";
 
 
