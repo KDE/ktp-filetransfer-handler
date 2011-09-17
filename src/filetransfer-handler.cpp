@@ -16,6 +16,7 @@
  */
 
 #include "filetransfer-handler.h"
+#include "telepathy-handler-application.h"
 #include "handle-incoming-file-transfer-channel-job.h"
 #include "handle-outgoing-file-transfer-channel-job.h"
 
@@ -32,18 +33,13 @@
 #include <kjobtrackerinterface.h>
 #include <KDebug>
 
-#include <QApplication>
 
-
-FileTransferHandler::FileTransferHandler(bool persist, QObject *parent)
+FileTransferHandler::FileTransferHandler(QObject *parent)
     : QObject(parent),
       Tp::AbstractClientHandler(Tp::ChannelClassSpecList() << Tp::ChannelClassSpec::incomingFileTransfer()
-                                                           << Tp::ChannelClassSpec::outgoingFileTransfer()),
-      m_persist(persist),
-      m_jobCount(0)
+                                                           << Tp::ChannelClassSpec::outgoingFileTransfer())
 {
 }
-
 
 FileTransferHandler::~FileTransferHandler()
 {
@@ -71,11 +67,15 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
     Q_FOREACH(const Tp::ChannelPtr &channel, channels) {
         kDebug() << "Handling new file transfer";
 
-
         KJob* job = NULL;
         if (Tp::IncomingFileTransferChannelPtr incomingFileTransferChannel = Tp::IncomingFileTransferChannelPtr::dynamicCast(channel)) {
-            m_jobCount.fetchAndAddOrdered(1);
-            context->setFinished();
+            if (KTelepathy::TelepathyHandlerApplication::newJob() >= 0) {
+                context->setFinished();
+            } else {
+                context->setFinishedWithError(QLatin1String("org.freedesktop.Telepathy.KDE.FileTransfer.Exiting"),
+                                              i18n("File transfer handler is exiting. Cannot start job"));
+                return;
+            }
 
             kDebug() << "Incoming File Transfer:";
             kDebug() << channel->immutableProperties();
@@ -90,13 +90,18 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
 
             job = new HandleIncomingFileTransferChannelJob(incomingFileTransferChannel, downloadDirectory, this);
         } else if (Tp::OutgoingFileTransferChannelPtr outgoingFileTransferChannel = Tp::OutgoingFileTransferChannelPtr::dynamicCast(channel)) {
-            if (outgoingFileTransferChannel->uri().isEmpty())
-            {
+            if (outgoingFileTransferChannel->uri().isEmpty()) {
                 context->setFinishedWithError(QLatin1String(TELEPATHY_QT4_ERROR_INCONSISTENT),
-                                              QLatin1String("Cannot handle outgoing file transfer without URI"));
+                                              i18n("Cannot handle outgoing file transfer without URI"));
             }
-            m_jobCount.fetchAndAddOrdered(1);
-            context->setFinished();
+
+            if (KTelepathy::TelepathyHandlerApplication::newJob() >= 0) {
+                context->setFinished();
+            } else {
+                context->setFinishedWithError(QLatin1String("org.freedesktop.Telepathy.KDE.FileTransfer.Exiting"),
+                                              i18n("File transfer handler is exiting. Cannot start job"));
+                return;
+            }
 
             kDebug() << "Outgoing File Transfer:";
             kDebug() << channel->immutableProperties();
@@ -104,7 +109,7 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
             job = new HandleOutgoingFileTransferChannelJob(outgoingFileTransferChannel, this);
         } else {
             context->setFinishedWithError(QLatin1String(TELEPATHY_QT4_ERROR_INCONSISTENT),
-                                          QLatin1String("Unknown channel type"));
+                                          i18n("Unknown channel type"));
             kDebug() << "If you are reading this, then telepathy is broken";
         }
 
@@ -138,13 +143,7 @@ void FileTransferHandler::handleResult(KJob* job)
         // TODO do something;
     }
 
-    QTimer::singleShot(2000, this, SLOT(onTimeout()));
+    KTelepathy::TelepathyHandlerApplication::jobFinished();
 }
 
-void FileTransferHandler::onTimeout()
-{
-    if (!m_persist && m_jobCount.fetchAndAddOrdered(-1) <= 1) {
-        kDebug() << "Timeout. Exiting";
-        QApplication::quit();
-    }
-}
+#include "filetransfer-handler.moc"

@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "telepathy-handler-application.h"
 #include "filetransfer-handler.h"
-
-#include <TelepathyQt4/Debug>
 
 #include <KAboutData>
 #include <KCmdLineArgs>
-#include <KApplication>
 #include <KDebug>
 #include <TelepathyQt4/ClientRegistrar>
 #include <TelepathyQt4/FileTransferChannel>
+#include <TelepathyQt4/Debug>
+
 
 int main(int argc, char* argv[])
 {
@@ -35,21 +35,8 @@ int main(int argc, char* argv[])
     aboutData.addAuthor(ki18n("Daniele E. Domenichelli"), ki18n("Developer"), "daniele.domenichelli@gmail.com");
     aboutData.setProductName("telepathy/filetransfer");
 
-    // Add --debug as and --persist commandline options
-    KCmdLineOptions options;
-    options.add("debug", ki18n("Show Telepathy debugging information"));
-    options.add("persist", ki18n("Persistent mode (does not exit on timeout)"));
-    KCmdLineArgs::addCmdLineOptions(options);
-
     KCmdLineArgs::init(argc, argv, &aboutData);
-    KApplication app;
-    app.setQuitOnLastWindowClosed(false);
-
-    Tp::registerTypes();
-    //Enable telepathy-Qt4 debug
-    Tp::enableDebug(KCmdLineArgs::parsedArgs()->isSet("debug"));
-    Tp::enableWarnings(true);
-
+    KTelepathy::TelepathyHandlerApplication app;
 
     Tp::AccountFactoryPtr accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus());
 
@@ -67,14 +54,11 @@ int main(int argc, char* argv[])
                                                                    channelFactory,
                                                                    contactFactory);
 
-    Tp::SharedPtr<FileTransferHandler> fth = Tp::SharedPtr<FileTransferHandler>(
-            new FileTransferHandler(KCmdLineArgs::parsedArgs()->isSet("persist"), &app));
+    Tp::SharedPtr<FileTransferHandler> fth = Tp::SharedPtr<FileTransferHandler>(new FileTransferHandler(&app));
     if(!registrar->registerClient(Tp::AbstractClientPtr(fth), QLatin1String("KDE.FileTransfer"))) {
         kDebug() << "File Transfer Handler already running. Exiting";
         return 1;
     }
-
-    QTimer::singleShot(60000, fth.data(), SLOT(onTimeout()));
 
     return app.exec();
 }
