@@ -50,8 +50,9 @@ class HandleIncomingFileTransferChannelJobPrivate : public KTelepathy::Telepathy
         QFile* file;
 
         void init();
-        void start();
-        bool kill();
+
+        void __k__start();
+        bool __k__kill();
 
         void __k__onSetUriOperationFinished(Tp::PendingOperation* op);
         void __k__onFileTransferChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason);
@@ -82,15 +83,17 @@ HandleIncomingFileTransferChannelJob::~HandleIncomingFileTransferChannelJob()
 void HandleIncomingFileTransferChannelJob::start()
 {
     kDebug();
-    Q_D(HandleIncomingFileTransferChannelJob);
-    d->start();
+    KIO::getJobTracker()->registerJob(this);
+    // KWidgetJobTracker has an internal timer of 500 ms, if we don't wait here
+    // when the job description is emitted it won't be ready
+    QTimer::singleShot(500, this, SLOT(__k__start()));
 }
 
 bool HandleIncomingFileTransferChannelJob::doKill()
 {
     kDebug();
-    Q_D(HandleIncomingFileTransferChannelJob);
-    return d->kill();
+    QTimer::singleShot(0, this, SLOT(__k__kill()));
+    return true;
 }
 
 HandleIncomingFileTransferChannelJobPrivate::HandleIncomingFileTransferChannelJobPrivate()
@@ -128,9 +131,9 @@ void HandleIncomingFileTransferChannelJobPrivate::init()
         return;
     }
 
-    KIO::getJobTracker()->registerJob(q);
     q->setCapabilities(KJob::Killable);
     q->setTotalAmount(KJob::Bytes, channel->size());
+    q->setProcessedAmount(KJob::Bytes, 0);
 
     q->connect(channel.data(),
                SIGNAL(invalidated(Tp::DBusProxy *, const QString &, const QString &)),
@@ -143,7 +146,7 @@ void HandleIncomingFileTransferChannelJobPrivate::init()
                SLOT(__k__onFileTransferChannelTransferredBytesChanged(qulonglong)));
 }
 
-void HandleIncomingFileTransferChannelJobPrivate::start()
+void HandleIncomingFileTransferChannelJobPrivate::__k__start()
 {
     kDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
@@ -159,6 +162,11 @@ void HandleIncomingFileTransferChannelJobPrivate::start()
     url.addPath(channel->fileName());
     url.setScheme(QLatin1String("file"));
     kDebug() << "File name:" << url;
+
+    // We set the description here and then whe update it if path is changed.
+    Q_EMIT q->description(q, i18n("Incoming file transfer"),
+                          qMakePair<QString, QString>(i18n("From"), channel->targetContact()->alias()),
+                          qMakePair<QString, QString>(i18n("Filename"), url.toLocalFile()));
 
     QFileInfo fileInfo(url.toLocalFile());
     if (fileInfo.exists()) // TODO check if it is a dir?
@@ -193,6 +201,10 @@ void HandleIncomingFileTransferChannelJobPrivate::start()
                 return;
             case KIO::R_RENAME:
                 url = renameDialog.data()->newDestUrl();
+                // url is changed, we update it here
+                Q_EMIT q->description(q, i18n("Incoming file transfer"),
+                                      qMakePair<QString, QString>(i18n("From"), channel->targetContact()->alias()),
+                                      qMakePair<QString, QString>(i18n("Filename"), url.toLocalFile()));
                 break;
             case KIO::R_OVERWRITE:
                 break;
@@ -214,19 +226,13 @@ void HandleIncomingFileTransferChannelJobPrivate::start()
     file = new QFile(url.toLocalFile(), q->parent());
     kDebug() << "Saving file as" << file->fileName();
 
-    // We must emit the description here and not later because if
-    // setUriOperation fails and we won't know there the file is saved.
-    Q_EMIT q->description(q, i18n("Incoming file transfer"),
-                          qMakePair<QString, QString>(i18n("From"), channel->targetContact()->alias()),
-                          qMakePair<QString, QString>(i18n("Filename"), url.toLocalFile()));
-
     Tp::PendingOperation* setUriOperation = channel->setUri(url.url());
     q->connect(setUriOperation,
                SIGNAL(finished(Tp::PendingOperation*)),
                SLOT(__k__onSetUriOperationFinished(Tp::PendingOperation*)));
 }
 
-bool HandleIncomingFileTransferChannelJobPrivate::kill()
+bool HandleIncomingFileTransferChannelJobPrivate::__k__kill()
 {
     kDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);

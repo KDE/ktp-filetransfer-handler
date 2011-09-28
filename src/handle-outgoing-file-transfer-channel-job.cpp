@@ -20,7 +20,7 @@
 #include "handle-outgoing-file-transfer-channel-job.h"
 #include "telepathy-base-job_p.h"
 
-#include <QTimer>
+#include <QtCore/QTimer>
 
 #include <KLocalizedString>
 #include <KDebug>
@@ -46,9 +46,10 @@ class HandleOutgoingFileTransferChannelJobPrivate : public KTelepathy::Telepathy
         KUrl uri;
 
         void init();
-        void start();
-        bool kill();
         void provideFile();
+
+        void __k__start();
+        bool __k__kill();
 
         void __k__onFileTransferChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason);
         void __k__onFileTransferChannelTransferredBytesChanged(qulonglong count);
@@ -76,15 +77,17 @@ HandleOutgoingFileTransferChannelJob::~HandleOutgoingFileTransferChannelJob()
 void HandleOutgoingFileTransferChannelJob::start()
 {
     kDebug();
-    Q_D(HandleOutgoingFileTransferChannelJob);
-    d->start();
+    KIO::getJobTracker()->registerJob(this);
+    // KWidgetJobTracker has an internal timer of 500 ms, if we don't wait here
+    // when the job description is emitted it won't be ready
+    QTimer::singleShot(500, this, SLOT(__k__start()));
 }
 
 bool HandleOutgoingFileTransferChannelJob::doKill()
 {
     kDebug();
-    Q_D(HandleOutgoingFileTransferChannelJob);
-    return d->kill();
+    QTimer::singleShot(0, this, SLOT(__k__kill()));
+    return true;
 }
 
 HandleOutgoingFileTransferChannelJobPrivate::HandleOutgoingFileTransferChannelJobPrivate()
@@ -141,9 +144,9 @@ void HandleOutgoingFileTransferChannelJobPrivate::init()
         return;
     }
 
-    KIO::getJobTracker()->registerJob(q);
     q->setCapabilities(KJob::Killable);
     q->setTotalAmount(KJob::Bytes, channel->size());
+    q->setProcessedAmount(KJob::Bytes, 0);
 
     q->connect(channel.data(),
                SIGNAL(invalidated(Tp::DBusProxy *, const QString &, const QString &)),
@@ -156,7 +159,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::init()
                SLOT(__k__onFileTransferChannelTransferredBytesChanged(qulonglong)));
 }
 
-void HandleOutgoingFileTransferChannelJobPrivate::start()
+void HandleOutgoingFileTransferChannelJobPrivate::__k__start()
 {
     kDebug();
     Q_Q(HandleOutgoingFileTransferChannelJob);
@@ -177,7 +180,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::start()
     }
 }
 
-bool HandleOutgoingFileTransferChannelJobPrivate::kill()
+bool HandleOutgoingFileTransferChannelJobPrivate::__k__kill()
 {
     kDebug();
     Q_Q(HandleOutgoingFileTransferChannelJob);
