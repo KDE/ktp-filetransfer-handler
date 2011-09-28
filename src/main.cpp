@@ -48,6 +48,7 @@ int main(int argc, char* argv[])
     channelFactory->addFeaturesForOutgoingFileTransfers(Tp::FileTransferChannel::FeatureCore);
 
     Tp::ContactFactoryPtr contactFactory = Tp::ContactFactory::create();
+    contactFactory->addFeature(Tp::Contact::FeatureAlias);
 
     Tp::ClientRegistrarPtr registrar = Tp::ClientRegistrar::create(accountFactory,
                                                                    connectionFactory,

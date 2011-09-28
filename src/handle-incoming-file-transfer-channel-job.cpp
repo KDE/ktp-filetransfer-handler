@@ -33,6 +33,8 @@
 #include <TelepathyQt4/IncomingFileTransferChannel>
 #include <TelepathyQt4/PendingReady>
 #include <TelepathyQt4/PendingOperation>
+#include <TelepathyQt4/Contact>
+
 
 class HandleIncomingFileTransferChannelJobPrivate : public KTelepathy::TelepathyBaseJobPrivate
 {
@@ -203,6 +205,12 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
 
     file = new QFile(url.toLocalFile(), q->parent());
     kDebug() << "Saving file as" << file->fileName();
+
+    // We must emit the description here and not later because if
+    // setUriOperation fails and we won't know there the file is saved.
+    Q_EMIT q->description(q, i18n("Incoming file transfer"),
+                          qMakePair<QString, QString>(i18n("From"), channel->targetContact()->alias()),
+                          qMakePair<QString, QString>(i18n("Filename"), url.toLocalFile()));
 
     Tp::PendingOperation* setUriOperation = channel->setUri(url.url());
     q->connect(setUriOperation,

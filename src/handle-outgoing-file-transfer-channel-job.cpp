@@ -31,6 +31,7 @@
 #include <TelepathyQt4/OutgoingFileTransferChannel>
 #include <TelepathyQt4/PendingReady>
 #include <TelepathyQt4/PendingOperation>
+#include <TelepathyQt4/Contact>
 
 class HandleOutgoingFileTransferChannelJobPrivate : public KTelepathy::TelepathyBaseJobPrivate
 {
@@ -138,6 +139,9 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__start()
     q->connect(channel.data(),
                SIGNAL(transferredBytesChanged(qulonglong)),
                SLOT(__k__onFileTransferChannelTransferredBytesChanged(qulonglong)));
+    Q_EMIT q->description(q, i18n("Outgoing file transfer"),
+                          qMakePair<QString, QString>(i18n("To"), channel->targetContact()->alias()),
+                          qMakePair<QString, QString>(i18n("Filename"), channel->uri()));
 
     if (channel->state() == Tp::FileTransferStateAccepted) {
         QTimer::singleShot(0, q, SLOT(__k__provideFile()));
