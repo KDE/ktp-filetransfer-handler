@@ -85,7 +85,9 @@ void HandleOutgoingFileTransferChannelJob::start()
 
 bool HandleOutgoingFileTransferChannelJob::doKill()
 {
-    kDebug();
+    kWarning() << "Outgoing file transfer was canceled.";
+    setError(KTelepathy::FileTransferCancelled);
+    setErrorText(i18n("Outgoing file transfer was canceled."));
     QTimer::singleShot(0, this, SLOT(__k__kill()));
     return true;
 }
@@ -185,9 +187,6 @@ bool HandleOutgoingFileTransferChannelJobPrivate::__k__kill()
     kDebug();
     Q_Q(HandleOutgoingFileTransferChannelJob);
 
-    q->setError(KTelepathy::FileTransferCancelled);
-    q->setErrorText(i18n("Outgoing file transfer was canceled."));
-
     Tp::PendingOperation *cancelOperation = channel->cancel();
     q->connect(cancelOperation,
                SIGNAL(finished(Tp::PendingOperation*)),
@@ -218,9 +217,6 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
             QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
             break;
         case Tp::FileTransferStateCancelled:
-            kWarning() << "Outgoing file transfer was canceled.";
-            q->setError(KTelepathy::FileTransferCancelled);
-            q->setErrorText(i18n("Outgoing file transfer was canceled."));
             q->kill(KJob::Quietly);
             break;
         case Tp::FileTransferStateAccepted:
