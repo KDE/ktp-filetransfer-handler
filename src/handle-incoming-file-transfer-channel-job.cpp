@@ -49,7 +49,8 @@ class HandleIncomingFileTransferChannelJobPrivate : public KTelepathy::Telepathy
         qulonglong offset;
         QFile* file;
 
-        void __k__start();
+        void start();
+
         void __k__onSetUriOperationFinished(Tp::PendingOperation* op);
         void __k__onFileTransferChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason);
         void __k__onFileTransferChannelTransferredBytesChanged(qulonglong count);
@@ -109,7 +110,8 @@ HandleIncomingFileTransferChannelJob::~HandleIncomingFileTransferChannelJob()
 void HandleIncomingFileTransferChannelJob::start()
 {
     kDebug();
-    QTimer::singleShot(0, this, SLOT(__k__start()));
+    Q_D(HandleIncomingFileTransferChannelJob);
+    d->start();
 }
 
 bool HandleIncomingFileTransferChannelJob::doKill()
@@ -136,12 +138,14 @@ HandleIncomingFileTransferChannelJobPrivate::~HandleIncomingFileTransferChannelJ
     kDebug();
 }
 
-void HandleIncomingFileTransferChannelJobPrivate::__k__start()
+void HandleIncomingFileTransferChannelJobPrivate::start()
 {
     kDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
+    Q_ASSERT(!q->error());
     if (q->error()) {
+        kWarning() << "Job was started in error state. Something wrong happened." << q->errorString();
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         return;
     }

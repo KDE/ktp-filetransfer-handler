@@ -44,9 +44,10 @@ class HandleOutgoingFileTransferChannelJobPrivate : public KTelepathy::Telepathy
         Tp::OutgoingFileTransferChannelPtr channel;
         QFile* file;
 
-        void __k__start();
+        void start();
+        void provideFile();
+
         void __k__onFileTransferChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason);
-        void __k__provideFile();
         void __k__onFileTransferChannelTransferredBytesChanged(qulonglong count);
         void __k__onProvideFileFinished(Tp::PendingOperation* op);
         void __k__onCancelOperationFinished(Tp::PendingOperation* op);
@@ -102,7 +103,8 @@ HandleOutgoingFileTransferChannelJob::~HandleOutgoingFileTransferChannelJob()
 void HandleOutgoingFileTransferChannelJob::start()
 {
     kDebug();
-    QTimer::singleShot(0, this, SLOT(__k__start()));
+    Q_D(HandleOutgoingFileTransferChannelJob);
+    d->start();
 }
 
 bool HandleOutgoingFileTransferChannelJob::doKill()
@@ -129,12 +131,14 @@ HandleOutgoingFileTransferChannelJobPrivate::~HandleOutgoingFileTransferChannelJ
     kDebug();
 }
 
-void HandleOutgoingFileTransferChannelJobPrivate::__k__start()
+void HandleOutgoingFileTransferChannelJobPrivate::start()
 {
     kDebug();
     Q_Q(HandleOutgoingFileTransferChannelJob);
 
+    Q_ASSERT(!q->error());
     if (q->error()) {
+        kWarning() << "Job was started in error state. Something wrong happened." << q->errorString();
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         return;
     }
@@ -144,7 +148,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__start()
                           qMakePair<QString, QString>(i18n("Filename"), channel->uri()));
 
     if (channel->state() == Tp::FileTransferStateAccepted) {
-        QTimer::singleShot(0, q, SLOT(__k__provideFile()));
+        provideFile();
     }
 }
 
@@ -177,7 +181,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
             q->kill(KJob::Quietly);
             break;
         case Tp::FileTransferStateAccepted:
-            QTimer::singleShot(0, q, SLOT(__k__provideFile()));
+            provideFile();
             break;
         case Tp::FileTransferStatePending:
         case Tp::FileTransferStateOpen:
@@ -186,7 +190,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
     }
 }
 
-void HandleOutgoingFileTransferChannelJobPrivate::__k__provideFile()
+void HandleOutgoingFileTransferChannelJobPrivate::provideFile()
 {
     kDebug();
     Q_Q(HandleOutgoingFileTransferChannelJob);
