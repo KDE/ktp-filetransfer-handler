@@ -43,7 +43,9 @@ class HandleOutgoingFileTransferChannelJobPrivate : public KTelepathy::Telepathy
 
         Tp::OutgoingFileTransferChannelPtr channel;
         QFile* file;
+        KUrl uri;
 
+        void init();
         void start();
         void provideFile();
 
@@ -62,37 +64,7 @@ HandleOutgoingFileTransferChannelJob::HandleOutgoingFileTransferChannelJob(Tp::O
     Q_D(HandleOutgoingFileTransferChannelJob);
 
     d->channel = channel;
-
-    if (channel.isNull())
-    {
-        kError() << "Channel cannot be NULL";
-        setError(KTelepathy::NullChannel);
-        setErrorText(i18n("Invalid channel"));
-        return;
-    }
-
-    Tp::Features features = Tp::Features() << Tp::FileTransferChannel::FeatureCore;
-    if (!channel->isReady(Tp::Features() << Tp::FileTransferChannel::FeatureCore))
-    {
-        kError() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore";
-        setError(KTelepathy::FeatureNotReady);
-        setErrorText(i18n("Channel is not ready"));
-        return;
-    }
-
-    KIO::getJobTracker()->registerJob(this);
-    setCapabilities(KJob::Killable);
-    setTotalAmount(KJob::Bytes, channel->size());
-
-    connect(channel.data(),
-            SIGNAL(invalidated(Tp::DBusProxy *, const QString &, const QString &)),
-            SLOT(__k__onInvalidated()));
-    connect(channel.data(),
-            SIGNAL(stateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)),
-            SLOT(__k__onFileTransferChannelStateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)));
-    connect(channel.data(),
-            SIGNAL(transferredBytesChanged(qulonglong)),
-            SLOT(__k__onFileTransferChannelTransferredBytesChanged(qulonglong)));
+    d->init();
 }
 
 HandleOutgoingFileTransferChannelJob::~HandleOutgoingFileTransferChannelJob()
@@ -129,6 +101,64 @@ HandleOutgoingFileTransferChannelJobPrivate::HandleOutgoingFileTransferChannelJo
 HandleOutgoingFileTransferChannelJobPrivate::~HandleOutgoingFileTransferChannelJobPrivate()
 {
     kDebug();
+}
+
+void HandleOutgoingFileTransferChannelJobPrivate::init()
+{
+    kDebug();
+    Q_Q(HandleOutgoingFileTransferChannelJob);
+
+    if (channel.isNull())
+    {
+        kError() << "Channel cannot be NULL";
+        q->setError(KTelepathy::NullChannel);
+        q->setErrorText(i18n("Invalid channel"));
+        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+        return;
+    }
+
+    Tp::Features features = Tp::Features() << Tp::FileTransferChannel::FeatureCore;
+    if (!channel->isReady(Tp::Features() << Tp::FileTransferChannel::FeatureCore))
+    {
+        kError() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore";
+        q->setError(KTelepathy::FeatureNotReady);
+        q->setErrorText(i18n("Channel is not ready"));
+        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+        return;
+    }
+
+    uri = KUrl(channel->uri());
+    if (uri.isEmpty())
+    {
+        qWarning() << "URI property missing";
+        q->setError(KTelepathy::UriPropertyMissing);
+        q->setErrorText(i18n("URI property is missing"));
+        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+        return;
+    }
+    if (!uri.isLocalFile())
+    {
+        // TODO handle this!
+        qWarning() << "Not a local file";
+        q->setError(KTelepathy::NotALocalFile);
+        q->setErrorText(i18n("This is not a local file"));
+        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+        return;
+    }
+
+    KIO::getJobTracker()->registerJob(q);
+    q->setCapabilities(KJob::Killable);
+    q->setTotalAmount(KJob::Bytes, channel->size());
+
+    q->connect(channel.data(),
+               SIGNAL(invalidated(Tp::DBusProxy *, const QString &, const QString &)),
+               SLOT(__k__onInvalidated()));
+    q->connect(channel.data(),
+               SIGNAL(stateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)),
+               SLOT(__k__onFileTransferChannelStateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)));
+    q->connect(channel.data(),
+               SIGNAL(transferredBytesChanged(qulonglong)),
+               SLOT(__k__onFileTransferChannelTransferredBytesChanged(qulonglong)));
 }
 
 void HandleOutgoingFileTransferChannelJobPrivate::start()
@@ -194,31 +224,14 @@ void HandleOutgoingFileTransferChannelJobPrivate::provideFile()
 {
     kDebug();
     Q_Q(HandleOutgoingFileTransferChannelJob);
-    KUrl uri(channel->uri());
-    if (uri.isEmpty())
-    {
-        qWarning() << "URI property missing";
-        q->setError(KTelepathy::UriPropertyMissing);
-        q->setErrorText(i18n("URI property is missing"));
-        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
-        return;
-    }
-    if (!uri.isLocalFile())
-    {
-        // TODO handle this!
-        qWarning() << "Not a local file";
-        q->setError(KTelepathy::NotALocalFile);
-        q->setErrorText(i18n("This is not a local file"));
-        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
-        return;
-    }
 
     file = new QFile(uri.toLocalFile(), q->parent());
     kDebug() << "Providing file" << file->fileName();
 
     Tp::PendingOperation* provideFileOperation = channel->provideFile(file);
-    q->connect(provideFileOperation, SIGNAL(finished(Tp::PendingOperation*)),
-               q, SLOT(__k__onProvideFileFinished(Tp::PendingOperation*)));
+    q->connect(provideFileOperation,
+               SIGNAL(finished(Tp::PendingOperation*)),
+               SLOT(__k__onProvideFileFinished(Tp::PendingOperation*)));
 }
 
 void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelTransferredBytesChanged(qulonglong count)
@@ -269,8 +282,8 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onInvalidated()
     kDebug();
     Q_Q(HandleOutgoingFileTransferChannelJob);
 
-    kWarning() << "File transfer invalidated!";
-    Q_EMIT q->infoMessage(q, i18n("File transfer invalidated."));
+    kWarning() << "File transfer invalidated!" << channel->invalidationMessage() << "reason" << channel->invalidationReason();
+    Q_EMIT q->infoMessage(q, i18n("File transfer invalidated. %1").arg(channel->invalidationMessage()));
 
     QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
 }

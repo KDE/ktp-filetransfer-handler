@@ -49,6 +49,7 @@ class HandleIncomingFileTransferChannelJobPrivate : public KTelepathy::Telepathy
         qulonglong offset;
         QFile* file;
 
+        void init();
         void start();
 
         void __k__onSetUriOperationFinished(Tp::PendingOperation* op);
@@ -69,37 +70,7 @@ HandleIncomingFileTransferChannelJob::HandleIncomingFileTransferChannelJob(Tp::I
 
     d->channel = channel;
     d->downloadDirectory = downloadDirectory;
-
-    if (channel.isNull())
-    {
-        kError() << "Channel cannot be NULL";
-        setError(KTelepathy::NullChannel);
-        setErrorText(i18n("Invalid channel"));
-        return;
-    }
-
-    Tp::Features features = Tp::Features() << Tp::FileTransferChannel::FeatureCore;
-    if (!channel->isReady(Tp::Features() << Tp::FileTransferChannel::FeatureCore))
-    {
-        kError() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore";
-        setError(KTelepathy::FeatureNotReady);
-        setErrorText(i18n("Channel is not ready"));
-        return;
-    }
-
-    KIO::getJobTracker()->registerJob(this);
-    setCapabilities(KJob::Killable);
-    setTotalAmount(KJob::Bytes, channel->size());
-
-    connect(channel.data(),
-            SIGNAL(invalidated(Tp::DBusProxy *, const QString &, const QString &)),
-            SLOT(__k__onInvalidated()));
-    connect(channel.data(),
-            SIGNAL(stateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)),
-            SLOT(__k__onFileTransferChannelStateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)));
-    connect(channel.data(),
-            SIGNAL(transferredBytesChanged(qulonglong)),
-            SLOT(__k__onFileTransferChannelTransferredBytesChanged(qulonglong)));
+    d->init();
 }
 
 HandleIncomingFileTransferChannelJob::~HandleIncomingFileTransferChannelJob()
@@ -136,6 +107,45 @@ HandleIncomingFileTransferChannelJobPrivate::HandleIncomingFileTransferChannelJo
 HandleIncomingFileTransferChannelJobPrivate::~HandleIncomingFileTransferChannelJobPrivate()
 {
     kDebug();
+}
+
+void HandleIncomingFileTransferChannelJobPrivate::init()
+{
+    kDebug();
+    Q_Q(HandleIncomingFileTransferChannelJob);
+
+    if (channel.isNull())
+    {
+        kError() << "Channel cannot be NULL";
+        q->setError(KTelepathy::NullChannel);
+        q->setErrorText(i18n("Invalid channel"));
+        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+        return;
+    }
+
+    Tp::Features features = Tp::Features() << Tp::FileTransferChannel::FeatureCore;
+    if (!channel->isReady(Tp::Features() << Tp::FileTransferChannel::FeatureCore))
+    {
+        kError() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore";
+        q->setError(KTelepathy::FeatureNotReady);
+        q->setErrorText(i18n("Channel is not ready"));
+        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+        return;
+    }
+
+    KIO::getJobTracker()->registerJob(q);
+    q->setCapabilities(KJob::Killable);
+    q->setTotalAmount(KJob::Bytes, channel->size());
+
+    q->connect(channel.data(),
+               SIGNAL(invalidated(Tp::DBusProxy *, const QString &, const QString &)),
+               SLOT(__k__onInvalidated()));
+    q->connect(channel.data(),
+               SIGNAL(stateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)),
+               SLOT(__k__onFileTransferChannelStateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)));
+    q->connect(channel.data(),
+               SIGNAL(transferredBytesChanged(qulonglong)),
+               SLOT(__k__onFileTransferChannelTransferredBytesChanged(qulonglong)));
 }
 
 void HandleIncomingFileTransferChannelJobPrivate::start()
@@ -324,8 +334,8 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onInvalidated()
     kDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
-    kWarning() << "File transfer invalidated!";
-    Q_EMIT q->infoMessage(q, i18n("File transfer invalidated."));
+    kWarning() << "File transfer invalidated!" << channel->invalidationMessage() << "reason" << channel->invalidationReason();
+    Q_EMIT q->infoMessage(q, i18n("File transfer invalidated. %1").arg(channel->invalidationMessage()));
 
     QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
 }
