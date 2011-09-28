@@ -80,6 +80,7 @@ HandleIncomingFileTransferChannelJob::HandleIncomingFileTransferChannelJob(Tp::I
     }
 
     setCapabilities(KJob::Killable);
+    setTotalAmount(KJob::Bytes, channel->size());
 
     d->channel = channel;
     d->downloadDirectory = downloadDirectory;
@@ -246,7 +247,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelTran
     kDebug().nospace() << "Receiving " << channel->fileName() << " - "
                        << "transferred bytes" << " = " << count << " ("
                        << ((int) (((double) count / channel->size()) * 100)) << "% done)";
-    Q_EMIT q->infoMessage(q, i18n("Transferred bytes"));
+    q->setProcessedAmount(KJob::Bytes, count);
 }
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onAcceptFileFinished(Tp::PendingOperation* op)

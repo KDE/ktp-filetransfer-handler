@@ -77,6 +77,7 @@ HandleOutgoingFileTransferChannelJob::HandleOutgoingFileTransferChannelJob(Tp::O
             SLOT(__k__onInvalidated()));
 
     setCapabilities(KJob::Killable);
+    setTotalAmount(KJob::Bytes, channel->size());
 
     d->channel = channel;
 }
@@ -213,7 +214,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelTran
     kDebug().nospace() << "Sending " << channel->fileName() << " - "
                        << "Transferred bytes = " << count << " ("
                        << ((int) (((double) count / channel->size()) * 100)) << "% done)";
-    Q_EMIT q->infoMessage(q, i18n("Transferred bytes"));
+    q->setProcessedAmount(KJob::Bytes, count);
 }
 
 void HandleOutgoingFileTransferChannelJobPrivate::__k__onProvideFileFinished(Tp::PendingOperation* op)
