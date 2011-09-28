@@ -60,6 +60,8 @@ HandleOutgoingFileTransferChannelJob::HandleOutgoingFileTransferChannelJob(Tp::O
     kDebug();
     Q_D(HandleOutgoingFileTransferChannelJob);
 
+    d->channel = channel;
+
     if (channel.isNull())
     {
         kError() << "Channel cannot be NULL";
@@ -77,15 +79,19 @@ HandleOutgoingFileTransferChannelJob::HandleOutgoingFileTransferChannelJob(Tp::O
         return;
     }
 
-    connect(channel.data(),
-            SIGNAL(invalidated(Tp::DBusProxy *, const QString &, const QString &)),
-            SLOT(__k__onInvalidated()));
-
     KIO::getJobTracker()->registerJob(this);
     setCapabilities(KJob::Killable);
     setTotalAmount(KJob::Bytes, channel->size());
 
-    d->channel = channel;
+    connect(channel.data(),
+            SIGNAL(invalidated(Tp::DBusProxy *, const QString &, const QString &)),
+            SLOT(__k__onInvalidated()));
+    connect(channel.data(),
+            SIGNAL(stateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)),
+            SLOT(__k__onFileTransferChannelStateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)));
+    connect(channel.data(),
+            SIGNAL(transferredBytesChanged(qulonglong)),
+            SLOT(__k__onFileTransferChannelTransferredBytesChanged(qulonglong)));
 }
 
 HandleOutgoingFileTransferChannelJob::~HandleOutgoingFileTransferChannelJob()
@@ -133,12 +139,6 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__start()
         return;
     }
 
-    q->connect(channel.data(),
-               SIGNAL(stateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)),
-               SLOT(__k__onFileTransferChannelStateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)));
-    q->connect(channel.data(),
-               SIGNAL(transferredBytesChanged(qulonglong)),
-               SLOT(__k__onFileTransferChannelTransferredBytesChanged(qulonglong)));
     Q_EMIT q->description(q, i18n("Outgoing file transfer"),
                           qMakePair<QString, QString>(i18n("To"), channel->targetContact()->alias()),
                           qMakePair<QString, QString>(i18n("Filename"), channel->uri()));

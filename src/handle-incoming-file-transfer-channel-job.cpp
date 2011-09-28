@@ -68,6 +68,9 @@ HandleIncomingFileTransferChannelJob::HandleIncomingFileTransferChannelJob(Tp::I
     kDebug();
     Q_D(HandleIncomingFileTransferChannelJob);
 
+    d->channel = channel;
+    d->downloadDirectory = downloadDirectory;
+
     if (channel.isNull())
     {
         kError() << "Channel cannot be NULL";
@@ -89,8 +92,15 @@ HandleIncomingFileTransferChannelJob::HandleIncomingFileTransferChannelJob(Tp::I
     setCapabilities(KJob::Killable);
     setTotalAmount(KJob::Bytes, channel->size());
 
-    d->channel = channel;
-    d->downloadDirectory = downloadDirectory;
+    connect(channel.data(),
+            SIGNAL(invalidated(Tp::DBusProxy *, const QString &, const QString &)),
+            SLOT(__k__onInvalidated()));
+    connect(channel.data(),
+            SIGNAL(stateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)),
+            SLOT(__k__onFileTransferChannelStateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)));
+    connect(channel.data(),
+            SIGNAL(transferredBytesChanged(qulonglong)),
+            SLOT(__k__onFileTransferChannelTransferredBytesChanged(qulonglong)));
 }
 
 HandleIncomingFileTransferChannelJob::~HandleIncomingFileTransferChannelJob()
@@ -137,15 +147,6 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         return;
     }
-
-    q->connect(channel.data(), SIGNAL(invalidated(Tp::DBusProxy *, const QString &, const QString &)),
-               q, SLOT(__k__onInvalidated()));
-    q->connect(channel.data(),
-               SIGNAL(stateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)),
-               SLOT(__k__onFileTransferChannelStateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)));
-    q->connect(channel.data(),
-               SIGNAL(transferredBytesChanged(qulonglong)),
-               SLOT(__k__onFileTransferChannelTransferredBytesChanged(qulonglong)));
 
     KUrl url(downloadDirectory);
     url.addPath(channel->fileName());
