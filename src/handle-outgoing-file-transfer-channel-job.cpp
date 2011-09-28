@@ -47,6 +47,7 @@ class HandleOutgoingFileTransferChannelJobPrivate : public KTelepathy::Telepathy
 
         void init();
         void start();
+        bool kill();
         void provideFile();
 
         void __k__onFileTransferChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason);
@@ -83,13 +84,7 @@ bool HandleOutgoingFileTransferChannelJob::doKill()
 {
     kDebug();
     Q_D(HandleOutgoingFileTransferChannelJob);
-
-    //TODO suspend the transfer?
-    Tp::PendingOperation *cancelOperation = d->channel->cancel();
-    connect(cancelOperation,
-            SIGNAL(finished(Tp::PendingOperation*)),
-            SLOT(__k__onCancelOperationFinished(Tp::PendingOperation*)));
-    return true;
+    return d->kill();
 }
 
 HandleOutgoingFileTransferChannelJobPrivate::HandleOutgoingFileTransferChannelJobPrivate()
@@ -180,6 +175,21 @@ void HandleOutgoingFileTransferChannelJobPrivate::start()
     if (channel->state() == Tp::FileTransferStateAccepted) {
         provideFile();
     }
+}
+
+bool HandleOutgoingFileTransferChannelJobPrivate::kill()
+{
+    kDebug();
+    Q_Q(HandleOutgoingFileTransferChannelJob);
+
+    q->setError(KTelepathy::FileTransferCancelled);
+    q->setErrorText(i18n("Outgoing file transfer was canceled."));
+
+    Tp::PendingOperation *cancelOperation = channel->cancel();
+    q->connect(cancelOperation,
+               SIGNAL(finished(Tp::PendingOperation*)),
+               SLOT(__k__onCancelOperationFinished(Tp::PendingOperation*)));
+    return true;
 }
 
 void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelStateChanged(Tp::FileTransferState state,

@@ -51,6 +51,7 @@ class HandleIncomingFileTransferChannelJobPrivate : public KTelepathy::Telepathy
 
         void init();
         void start();
+        bool kill();
 
         void __k__onSetUriOperationFinished(Tp::PendingOperation* op);
         void __k__onFileTransferChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason);
@@ -89,13 +90,7 @@ bool HandleIncomingFileTransferChannelJob::doKill()
 {
     kDebug();
     Q_D(HandleIncomingFileTransferChannelJob);
-
-    //TODO suspend the transfer?
-    Tp::PendingOperation *cancelOperation = d->channel->cancel();
-    connect(cancelOperation,
-            SIGNAL(finished(Tp::PendingOperation*)),
-            SLOT(__k__onCancelOperationFinished(Tp::PendingOperation*)));
-    return true;
+    return d->kill();
 }
 
 HandleIncomingFileTransferChannelJobPrivate::HandleIncomingFileTransferChannelJobPrivate()
@@ -229,6 +224,18 @@ void HandleIncomingFileTransferChannelJobPrivate::start()
     q->connect(setUriOperation,
                SIGNAL(finished(Tp::PendingOperation*)),
                SLOT(__k__onSetUriOperationFinished(Tp::PendingOperation*)));
+}
+
+bool HandleIncomingFileTransferChannelJobPrivate::kill()
+{
+    kDebug();
+    Q_Q(HandleIncomingFileTransferChannelJob);
+
+    Tp::PendingOperation *cancelOperation = channel->cancel();
+    q->connect(cancelOperation,
+               SIGNAL(finished(Tp::PendingOperation*)),
+               SLOT(__k__onCancelOperationFinished(Tp::PendingOperation*)));
+    return true;
 }
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onSetUriOperationFinished(Tp::PendingOperation* op)
