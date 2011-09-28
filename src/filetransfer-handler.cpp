@@ -28,7 +28,6 @@
 #include <KConfigGroup>
 #include <KLocalizedString>
 #include <KJob>
-// #include <KNotification>
 #include <KDebug>
 
 
@@ -128,8 +127,6 @@ void FileTransferHandler::onInfoMessage(KJob* job, const QString &plain, const Q
     Q_UNUSED(job);
     Q_UNUSED(rich);
     kDebug() << plain;
-
-//    KNotification::event("newOfferFileTransferEvent", plain, rich);
 }
 
 void FileTransferHandler::handleResult(KJob* job)
