@@ -42,6 +42,7 @@ class HandleIncomingFileTransferChannelJob : public KTelepathy::TelepathyBaseJob
     Q_PRIVATE_SLOT(d_func(), void __k__onFileTransferChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason))
     Q_PRIVATE_SLOT(d_func(), void __k__onFileTransferChannelTransferredBytesChanged(qulonglong count))
     Q_PRIVATE_SLOT(d_func(), void __k__onAcceptFileFinished(Tp::PendingOperation* op))
+    Q_PRIVATE_SLOT(d_func(), void __k__onCancelOperationFinished(Tp::PendingOperation* op))
     Q_PRIVATE_SLOT(d_func(), void __k__onInvalidated())
 
 public:
@@ -51,6 +52,7 @@ public:
     virtual ~HandleIncomingFileTransferChannelJob();
 
     virtual void start();
+    virtual bool doKill();
 };
 
 

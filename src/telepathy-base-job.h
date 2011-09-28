@@ -73,6 +73,8 @@ namespace KTelepathy {
         NotALocalFile = 114,
         /** Cannot provide file */
         ProvideFileError = 115,
+        /** Cannot cancel file transfer */
+        CancelFileTransferError = 116,
         /** Telepathy triggered an error */
         TelepathyErrorError = 200,
         /** KTelepathy Error */

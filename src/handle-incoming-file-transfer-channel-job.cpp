@@ -50,6 +50,7 @@ class HandleIncomingFileTransferChannelJobPrivate : public KTelepathy::Telepathy
         void __k__onFileTransferChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason);
         void __k__onFileTransferChannelTransferredBytesChanged(qulonglong count);
         void __k__onAcceptFileFinished(Tp::PendingOperation* op);
+        void __k__onCancelOperationFinished(Tp::PendingOperation* op);
         void __k__onInvalidated();
 
         bool transferCompleted;
@@ -78,6 +79,8 @@ HandleIncomingFileTransferChannelJob::HandleIncomingFileTransferChannelJob(Tp::I
         setErrorText(i18n("Channel is not ready"));
     }
 
+    setCapabilities(KJob::Killable);
+
     d->channel = channel;
     d->downloadDirectory = downloadDirectory;
 }
@@ -91,6 +94,19 @@ void HandleIncomingFileTransferChannelJob::start()
 {
     kDebug();
     QTimer::singleShot(0, this, SLOT(__k__start()));
+}
+
+bool HandleIncomingFileTransferChannelJob::doKill()
+{
+    kDebug();
+    Q_D(HandleIncomingFileTransferChannelJob);
+
+    //TODO suspend the transfer?
+    Tp::PendingOperation *cancelOperation = d->channel->cancel();
+    connect(cancelOperation,
+            SIGNAL(finished(Tp::PendingOperation*)),
+            SLOT(__k__onCancelOperationFinished(Tp::PendingOperation*)));
+    return true;
 }
 
 HandleIncomingFileTransferChannelJobPrivate::HandleIncomingFileTransferChannelJobPrivate()
@@ -247,6 +263,22 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onAcceptFileFinished(Tp::
         q->setErrorText(i18n("Unable to accept file"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
     }
+}
+
+void HandleIncomingFileTransferChannelJobPrivate::__k__onCancelOperationFinished(Tp::PendingOperation* op)
+{
+    kDebug();
+    Q_Q(HandleIncomingFileTransferChannelJob);
+
+    if (op->isError()) {
+        kWarning() << "Unable to cancel file transfer - " <<
+            op->errorName() << ":" << op->errorMessage();
+        q->setError(KTelepathy::CancelFileTransferError);
+        q->setErrorText(i18n("Cannot cancel file transfer"));
+    }
+
+    kDebug() << "File transfer cancelled";
+    QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
 }
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onInvalidated()
