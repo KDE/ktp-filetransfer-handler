@@ -62,6 +62,7 @@ HandleOutgoingFileTransferChannelJob::HandleOutgoingFileTransferChannelJob(Tp::O
         kError() << "Channel cannot be NULL";
         setError(KTelepathy::NullChannel);
         setErrorText(i18n("Invalid channel"));
+        return;
     }
 
     Tp::Features features = Tp::Features() << Tp::FileTransferChannel::FeatureCore;
@@ -70,6 +71,7 @@ HandleOutgoingFileTransferChannelJob::HandleOutgoingFileTransferChannelJob(Tp::O
         kError() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore";
         setError(KTelepathy::FeatureNotReady);
         setErrorText(i18n("Channel is not ready"));
+        return;
     }
 
     connect(channel.data(),
@@ -188,6 +190,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__provideFile()
         q->setError(KTelepathy::UriPropertyMissing);
         q->setErrorText(i18n("URI property is missing"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+        return;
     }
     if (!uri.isLocalFile())
     {
@@ -196,6 +199,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__provideFile()
         q->setError(KTelepathy::NotALocalFile);
         q->setErrorText(i18n("This is not a local file"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+        return;
     }
 
     file = new QFile(uri.toLocalFile(), q->parent());

@@ -69,6 +69,7 @@ HandleIncomingFileTransferChannelJob::HandleIncomingFileTransferChannelJob(Tp::I
         kError() << "Channel cannot be NULL";
         setError(KTelepathy::NullChannel);
         setErrorText(i18n("Invalid channel"));
+        return;
     }
 
     Tp::Features features = Tp::Features() << Tp::FileTransferChannel::FeatureCore;
@@ -77,6 +78,7 @@ HandleIncomingFileTransferChannelJob::HandleIncomingFileTransferChannelJob(Tp::I
         kError() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore";
         setError(KTelepathy::FeatureNotReady);
         setErrorText(i18n("Channel is not ready"));
+        return;
     }
 
     setCapabilities(KJob::Killable);
