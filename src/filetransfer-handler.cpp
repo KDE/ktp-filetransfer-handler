@@ -29,8 +29,6 @@
 #include <KLocalizedString>
 #include <KJob>
 // #include <KNotification>
-#include <kio/global.h>
-#include <kjobtrackerinterface.h>
 #include <KDebug>
 
 
@@ -114,7 +112,6 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
         }
 
         if (job) {
-            KIO::getJobTracker()->registerJob(job);
             connect(job,
                     SIGNAL(infoMessage(KJob*, QString, QString)),
                     SLOT(onInfoMessage(KJob*, QString, QString)));

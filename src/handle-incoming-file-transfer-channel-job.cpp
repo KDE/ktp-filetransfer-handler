@@ -27,6 +27,8 @@
 #include <KDebug>
 #include <KUrl>
 #include <kio/renamedialog.h>
+#include <kio/global.h>
+#include <kjobtrackerinterface.h>
 
 #include <TelepathyQt4/IncomingFileTransferChannel>
 #include <TelepathyQt4/PendingReady>
@@ -81,6 +83,7 @@ HandleIncomingFileTransferChannelJob::HandleIncomingFileTransferChannelJob(Tp::I
         return;
     }
 
+    KIO::getJobTracker()->registerJob(this);
     setCapabilities(KJob::Killable);
     setTotalAmount(KJob::Bytes, channel->size());
 

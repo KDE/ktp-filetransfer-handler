@@ -25,6 +25,8 @@
 #include <KLocalizedString>
 #include <KDebug>
 #include <KUrl>
+#include <kio/global.h>
+#include <kjobtrackerinterface.h>
 
 #include <TelepathyQt4/OutgoingFileTransferChannel>
 #include <TelepathyQt4/PendingReady>
@@ -78,6 +80,7 @@ HandleOutgoingFileTransferChannelJob::HandleOutgoingFileTransferChannelJob(Tp::O
             SIGNAL(invalidated(Tp::DBusProxy *, const QString &, const QString &)),
             SLOT(__k__onInvalidated()));
 
+    KIO::getJobTracker()->registerJob(this);
     setCapabilities(KJob::Killable);
     setTotalAmount(KJob::Bytes, channel->size());
 
