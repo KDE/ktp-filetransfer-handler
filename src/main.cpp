@@ -23,7 +23,6 @@
 #include <KDebug>
 #include <TelepathyQt4/ClientRegistrar>
 #include <TelepathyQt4/FileTransferChannel>
-#include <TelepathyQt4/Debug>
 
 
 int main(int argc, char* argv[])
