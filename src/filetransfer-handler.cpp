@@ -63,19 +63,20 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
 
     Q_ASSERT(channels.size() == 1);
 
-    kDebug() << "Handling new file transfer";
+    if (KTelepathy::TelepathyHandlerApplication::newJob() >= 0) {
+        context->setFinished();
+    } else {
+        context->setFinishedWithError(QLatin1String("org.freedesktop.Telepathy.KDE.FileTransfer.Exiting"),
+                                      i18n("File transfer handler is exiting. Cannot start job"));
+        return;
+    }
 
     KJob* job = NULL;
-    if (Tp::IncomingFileTransferChannelPtr incomingFileTransferChannel = Tp::IncomingFileTransferChannelPtr::dynamicCast(channels.first())) {
-        if (KTelepathy::TelepathyHandlerApplication::newJob() >= 0) {
-            context->setFinished();
-        } else {
-            context->setFinishedWithError(QLatin1String("org.freedesktop.Telepathy.KDE.FileTransfer.Exiting"),
-                                          i18n("File transfer handler is exiting. Cannot start job"));
-            return;
-        }
 
-        kDebug() << "Incoming File Transfer:";
+    if (!channels.first()->isRequested()) {
+        Tp::IncomingFileTransferChannelPtr incomingFileTransferChannel = Tp::IncomingFileTransferChannelPtr::dynamicCast(channels.first());
+        Q_ASSERT(incomingFileTransferChannel);
+
         kDebug() << incomingFileTransferChannel->immutableProperties();
 
         KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
@@ -87,28 +88,18 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
         // TODO Check if directory exists
 
         job = new HandleIncomingFileTransferChannelJob(incomingFileTransferChannel, downloadDirectory, this);
-    } else if (Tp::OutgoingFileTransferChannelPtr outgoingFileTransferChannel = Tp::OutgoingFileTransferChannelPtr::dynamicCast(channels.first())) {
+    } else {
+        Tp::OutgoingFileTransferChannelPtr outgoingFileTransferChannel = Tp::OutgoingFileTransferChannelPtr::dynamicCast(channels.first());
+        Q_ASSERT(outgoingFileTransferChannel);
+
+        kDebug() << outgoingFileTransferChannel->immutableProperties();
+
         if (outgoingFileTransferChannel->uri().isEmpty()) {
             context->setFinishedWithError(QLatin1String(TELEPATHY_QT4_ERROR_INCONSISTENT),
                                           i18n("Cannot handle outgoing file transfer without URI"));
         }
 
-        if (KTelepathy::TelepathyHandlerApplication::newJob() >= 0) {
-            context->setFinished();
-        } else {
-            context->setFinishedWithError(QLatin1String("org.freedesktop.Telepathy.KDE.FileTransfer.Exiting"),
-                                          i18n("File transfer handler is exiting. Cannot start job"));
-            return;
-        }
-
-        kDebug() << "Outgoing File Transfer:";
-        kDebug() << outgoingFileTransferChannel->immutableProperties();
-
         job = new HandleOutgoingFileTransferChannelJob(outgoingFileTransferChannel, this);
-    } else {
-        context->setFinishedWithError(QLatin1String(TELEPATHY_QT4_ERROR_INCONSISTENT),
-                                      i18n("Unknown channel type"));
-        kDebug() << "If you are reading this, then telepathy is broken";
     }
 
     if (job) {
