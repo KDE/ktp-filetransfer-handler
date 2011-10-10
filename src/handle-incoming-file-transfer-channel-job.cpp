@@ -289,8 +289,6 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
             q->kill(KJob::Quietly);
             break;
         case Tp::FileTransferStateAccepted:
-            QTimer::singleShot(0, q, SLOT(__k__provideFile()));
-            break;
         case Tp::FileTransferStatePending:
         case Tp::FileTransferStateOpen:
         default:
