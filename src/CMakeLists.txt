@@ -1,10 +1,14 @@
+set (telepathy_kde_common_internals_SRCS
+     ../common/telepathy-handler-application.cpp
+)
+
 set (telepathy_kde_filetransfer_handler_SRCS
      main.cpp
-     telepathy-handler-application.cpp
      filetransfer-handler.cpp
      telepathy-base-job.cpp
      handle-incoming-file-transfer-channel-job.cpp
      handle-outgoing-file-transfer-channel-job.cpp
+     ${telepathy_kde_common_internals_SRCS}
 )
 
 kde4_add_executable(telepathy-kde-filetransfer-handler ${telepathy_kde_filetransfer_handler_SRCS})

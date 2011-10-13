@@ -16,7 +16,7 @@
  */
 
 #include "filetransfer-handler.h"
-#include "telepathy-handler-application.h"
+#include "common/telepathy-handler-application.h"
 #include "handle-incoming-file-transfer-channel-job.h"
 #include "handle-outgoing-file-transfer-channel-job.h"
 

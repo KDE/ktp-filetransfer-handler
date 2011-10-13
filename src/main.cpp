@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "telepathy-handler-application.h"
 #include "filetransfer-handler.h"
+#include "common/telepathy-handler-application.h"
 
 #include <KAboutData>
 #include <KCmdLineArgs>
