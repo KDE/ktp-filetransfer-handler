@@ -28,7 +28,7 @@
 int main(int argc, char* argv[])
 {
     KAboutData aboutData("telepathy-kde-filetransfer-handler",
-                         0,
+                         "telepathy-filetransfer-handler",
                          ki18n("Telepathy File Transfer Handler"),
                          "0.1");
     aboutData.addAuthor(ki18n("Daniele E. Domenichelli"), ki18n("Developer"), "daniele.domenichelli@gmail.com");
