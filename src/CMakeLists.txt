@@ -20,11 +20,11 @@ target_link_libraries(telepathy-kde-filetransfer-handler
             ${TELEPATHY_QT4_LIBRARIES}
 )
 
-configure_file(org.freedesktop.Telepathy.Client.KDE.FileTransfer.service.in
-               ${CMAKE_CURRENT_BINARY_DIR}/org.freedesktop.Telepathy.Client.KDE.FileTransfer.service)
+configure_file(org.freedesktop.Telepathy.Client.KDE.FileTransferHandler.service.in
+        ${CMAKE_CURRENT_BINARY_DIR}/org.freedesktop.Telepathy.Client.KDE.FileTransferHandler.service)
 
 install(TARGETS telepathy-kde-filetransfer-handler DESTINATION ${LIBEXEC_INSTALL_DIR})
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.freedesktop.Telepathy.Client.KDE.FileTransfer.service
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.freedesktop.Telepathy.Client.KDE.FileTransferHandler.service
         DESTINATION ${DBUS_SERVICES_INSTALL_DIR})
-install(FILES KDE.FileTransfer.client DESTINATION ${SHARE_INSTALL_PREFIX}/telepathy/clients/)
+install(FILES KDE.FileTransferHandler.client DESTINATION ${SHARE_INSTALL_PREFIX}/telepathy/clients/)
 
