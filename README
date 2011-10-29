@@ -9,14 +9,13 @@ file transfer channels that aren't received by any other handler filtering
 on mimetype.
 
 
-To compile it you will need at least Telepathy-Qt4 >= 0.7.1 or the latest
+To compile it you will need at least Telepathy-Qt4 >= 0.7.3 or the latest
 git version.
 
 
-You can modify the default download directory by adding in your
-.kde/share/config/ktelepathyrc file in the section [File Transfers] the
-variable downloadDirectory
+You can modify the default download directory from telepathy-kded-module or by
+adding in your .kde/share/config/ktelepathyrc file in the section
+[File Transfers] the variable downloadDirectory
 
 [File Transfers]
 downloadDirectory=<download path>
-
