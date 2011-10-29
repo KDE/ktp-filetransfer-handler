@@ -1,4 +1,26 @@
-telepathy-kde file-transfer-handler (2011-07-27) 0.1.0
+telepathy-kde filetransfer-handler (2011-11-18) 0.2.0
+=====================================================
+
+ * Do not exit if setUri fails (drdanz)
+ * Increment initial timeout time (drdanz/d_ed)
+ * Exit File Transfer Handler if DBus name is already taken (drdanz)
+ * Install DBus activated binary in libexec (drdanz)
+ * Use KTelepathy::TelepathyHandlerApplication instead of KApplication (drdanz)
+ * Enable KDebug DBus interface for TelepathyHandlerApplication if debug is
+   enabled (drdanz)
+ * Make FileTransferJobs killable (drdanz)
+ * Show a progressbar for the file transferred (drdanz)
+ * Let the jobs register by themselves (drdanz)
+ * Add a description for the KJob (drdanz)
+ * Handle other states in incoming file transfer (drdanz)
+ * Don't use event loop for methods that don't need it (drdanz)
+ * Redirect Telepathy-Qt4 output to KDebug (drdanz)
+ * Bump TelepathyQt4 min version to 0.7.3 (drdanz)
+ * Use common submodule (drdanz)
+ * Rename DBus services, fix .client and .service files (drdanz)
+
+telepathy-kde filetransfer-handler (2011-07-27) 0.1.0
+======================================================
 
  * Update FindTelepathyQt4.cmake and search for Tp-Qt4 >= 0.7.1 (drdanz)
  * Better error handling (drdanz)
@@ -6,7 +28,7 @@ telepathy-kde file-transfer-handler (2011-07-27) 0.1.0
  * Use KUrl::isLocalFile() instead of comparing scheme (drdanz)
  * Make ft-handler a KApplication instead of a KUniqueApplication (drdanz/d_ed)
 
-telepathy-kde file-transfer-handler (2011-06-08) UNRELEASED
+telepathy-kde filetransfer-handler (2011-06-08) UNRELEASED
 ===========================================================
 
  * Add --debug and --persist command line options (drdanz)
@@ -15,7 +37,7 @@ telepathy-kde file-transfer-handler (2011-06-08) UNRELEASED
    already exists. (drdanz)
  * Don't stop the jobs before the file transfer has actually finished (gkiagia)
 
-telepathy-kde file-transfer-handler (2011-06-06) UNRELEASED
+telepathy-kde filetransfer-handler (2011-06-06) UNRELEASED
 ===========================================================
 
 First real commit 
