@@ -1,15 +1,11 @@
 General:
  * Use Nepomuk describeResource and storeResource to send somehow an additional
    trig or rdf file.
- * Stop transfer button.
- * Investigate why sometimes the job cannot be removed from the system tray
- * Investigate why sometimes the file transfer handler exits when transfer ends
- * Close channels when transfer ends
- * Show advancement in the job ui
+ * Investigate if channels are closed channels when transfer ends/fails
 
 Incoming file transfers
  * save as file.part and rename at the end + resume support
- * Configuration of the download directory from some ui.
- * File transfer support in the approver.
+ * Non modal overwrite window
+ * Close window if file transfer is cancelled
 
 Outgoing file transfers
