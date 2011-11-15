@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
     KAboutData aboutData("telepathy-kde-filetransfer-handler",
                          "telepathy-filetransfer-handler",
                          ki18n("Telepathy File Transfer Handler"),
-                         "0.1");
+                         "0.2.60");
     aboutData.addAuthor(ki18n("Daniele E. Domenichelli"), ki18n("Developer"), "daniele.domenichelli@gmail.com");
     aboutData.setProductName("telepathy/filetransfer");
 
