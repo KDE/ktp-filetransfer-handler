@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     aboutData.setProductName("telepathy/filetransfer");
 
     KCmdLineArgs::init(argc, argv, &aboutData);
-    KTelepathy::TelepathyHandlerApplication app;
+    KTp::TelepathyHandlerApplication app;
 
     Tp::AccountFactoryPtr accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus());
 

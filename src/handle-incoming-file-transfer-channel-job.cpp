@@ -36,7 +36,7 @@
 #include <TelepathyQt4/Contact>
 
 
-class HandleIncomingFileTransferChannelJobPrivate : public KTelepathy::TelepathyBaseJobPrivate
+class HandleIncomingFileTransferChannelJobPrivate : public KTp::TelepathyBaseJobPrivate
 {
     Q_DECLARE_PUBLIC(HandleIncomingFileTransferChannelJob)
 
@@ -92,7 +92,7 @@ void HandleIncomingFileTransferChannelJob::start()
 bool HandleIncomingFileTransferChannelJob::doKill()
 {
     kWarning() << "Incoming file transfer was canceled.";
-    setError(KTelepathy::FileTransferCancelled);
+    setError(KTp::FileTransferCancelled);
     setErrorText(i18n("Incoming file transfer was canceled."));
     QTimer::singleShot(0, this, SLOT(__k__kill()));
     return true;
@@ -117,7 +117,7 @@ void HandleIncomingFileTransferChannelJobPrivate::init()
     if (channel.isNull())
     {
         kError() << "Channel cannot be NULL";
-        q->setError(KTelepathy::NullChannel);
+        q->setError(KTp::NullChannel);
         q->setErrorText(i18n("Invalid channel"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         return;
@@ -127,7 +127,7 @@ void HandleIncomingFileTransferChannelJobPrivate::init()
     if (!channel->isReady(Tp::Features() << Tp::FileTransferChannel::FeatureCore))
     {
         kError() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore";
-        q->setError(KTelepathy::FeatureNotReady);
+        q->setError(KTp::FeatureNotReady);
         q->setErrorText(i18n("Channel is not ready"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         return;
@@ -212,7 +212,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
                 break;
             default:
                 kWarning() << "Unknown Error";
-                q->setError(KTelepathy::KTelepathyError);
+                q->setError(KTp::KTelepathyError);
                 q->setErrorText(i18n("Unknown Error"));
                 renameDialog.data()->deleteLater();
                 QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
@@ -276,7 +276,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
         case Tp::FileTransferStateNone:
             // This is bad
             kWarning() << "An unknown error occurred.";
-            q->setError(KTelepathy::TelepathyErrorError);
+            q->setError(KTp::TelepathyErrorError);
             q->setErrorText(i18n("An unknown error occurred"));
             QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         break;
@@ -317,7 +317,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onAcceptFileFinished(Tp::
     if (op->isError()) {
         kWarning() << "Unable to accept file -" <<
             op->errorName() << ":" << op->errorMessage();
-        q->setError(KTelepathy::AcceptFileError);
+        q->setError(KTp::AcceptFileError);
         q->setErrorText(i18n("Unable to accept file"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
     }
@@ -331,7 +331,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onCancelOperationFinished
     if (op->isError()) {
         kWarning() << "Unable to cancel file transfer - " <<
             op->errorName() << ":" << op->errorMessage();
-        q->setError(KTelepathy::CancelFileTransferError);
+        q->setError(KTp::CancelFileTransferError);
         q->setErrorText(i18n("Cannot cancel incoming file transfer"));
     }
 

@@ -30,7 +30,7 @@ namespace Tp {
 
 
 class HandleIncomingFileTransferChannelJobPrivate;
-class HandleIncomingFileTransferChannelJob : public KTelepathy::TelepathyBaseJob
+class HandleIncomingFileTransferChannelJob : public KTp::TelepathyBaseJob
 {
     Q_OBJECT
     Q_DISABLE_COPY(HandleIncomingFileTransferChannelJob)

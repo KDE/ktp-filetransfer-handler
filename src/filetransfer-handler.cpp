@@ -65,7 +65,7 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
 
     Q_ASSERT(channels.size() == 1);
 
-    if (KTelepathy::TelepathyHandlerApplication::newJob() >= 0) {
+    if (KTp::TelepathyHandlerApplication::newJob() >= 0) {
         context->setFinished();
     } else {
         context->setFinishedWithError(QLatin1String("org.freedesktop.Telepathy.KDE.FileTransfer.Exiting"),
@@ -130,7 +130,7 @@ void FileTransferHandler::handleResult(KJob* job)
         // TODO do something;
     }
 
-    KTelepathy::TelepathyHandlerApplication::jobFinished();
+    KTp::TelepathyHandlerApplication::jobFinished();
 }
 
 #include "filetransfer-handler.moc"

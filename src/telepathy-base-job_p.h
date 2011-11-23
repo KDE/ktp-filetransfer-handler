@@ -27,7 +27,7 @@ namespace Tp {
 class PendingOperation;
 }
 
-namespace KTelepathy {
+namespace KTp {
 
 class TelepathyBaseJobPrivate
 {
@@ -50,6 +50,6 @@ public:
     void __k__doEmitResult();
 };
 
-} // namespace KTelepathy
+} // namespace KTp
 
 #endif // LIBKTELEPATHY_TELEPATHY_BASE_JOB_P_H

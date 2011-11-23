@@ -25,7 +25,7 @@
 #include <KLocalizedString>
 #include <KDebug>
 
-using namespace KTelepathy;
+using namespace KTp;
 
 TelepathyBaseJobPrivate::TelepathyBaseJobPrivate()
     : q_ptr(0)
@@ -105,7 +105,7 @@ void TelepathyBaseJobPrivate::__k__doEmitResult()
         }
 
         // Ok, let's set the errors now
-        q->setError(KTelepathy::TelepathyErrorError);
+        q->setError(KTp::TelepathyErrorError);
         q->setErrorText(errorMessage);
     }
 

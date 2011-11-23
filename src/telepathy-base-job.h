@@ -24,7 +24,7 @@
 #include <kdemacros.h>
 #include <KJob>
 
-namespace KTelepathy {
+namespace KTp {
 
     /**
      * This enum defines the error code for a job spawned by one of the functions inside \c TelepathyBridge
@@ -98,6 +98,6 @@ protected:
     TelepathyBaseJobPrivate * const d_ptr;
 };
 
-} // namespace KTelepathy
+} // namespace KTp
 
 #endif // LIBKTELEPATHY_TELEPATHY_BASE_JOB_H

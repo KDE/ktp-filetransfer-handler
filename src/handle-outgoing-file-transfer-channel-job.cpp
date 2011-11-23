@@ -33,7 +33,7 @@
 #include <TelepathyQt4/PendingOperation>
 #include <TelepathyQt4/Contact>
 
-class HandleOutgoingFileTransferChannelJobPrivate : public KTelepathy::TelepathyBaseJobPrivate
+class HandleOutgoingFileTransferChannelJobPrivate : public KTp::TelepathyBaseJobPrivate
 {
     Q_DECLARE_PUBLIC(HandleOutgoingFileTransferChannelJob)
 
@@ -86,7 +86,7 @@ void HandleOutgoingFileTransferChannelJob::start()
 bool HandleOutgoingFileTransferChannelJob::doKill()
 {
     kWarning() << "Outgoing file transfer was canceled.";
-    setError(KTelepathy::FileTransferCancelled);
+    setError(KTp::FileTransferCancelled);
     setErrorText(i18n("Outgoing file transfer was canceled."));
     QTimer::singleShot(0, this, SLOT(__k__kill()));
     return true;
@@ -111,7 +111,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::init()
     if (channel.isNull())
     {
         kError() << "Channel cannot be NULL";
-        q->setError(KTelepathy::NullChannel);
+        q->setError(KTp::NullChannel);
         q->setErrorText(i18n("Invalid channel"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         return;
@@ -121,7 +121,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::init()
     if (!channel->isReady(Tp::Features() << Tp::FileTransferChannel::FeatureCore))
     {
         kError() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore";
-        q->setError(KTelepathy::FeatureNotReady);
+        q->setError(KTp::FeatureNotReady);
         q->setErrorText(i18n("Channel is not ready"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         return;
@@ -131,7 +131,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::init()
     if (uri.isEmpty())
     {
         qWarning() << "URI property missing";
-        q->setError(KTelepathy::UriPropertyMissing);
+        q->setError(KTp::UriPropertyMissing);
         q->setErrorText(i18n("URI property is missing"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         return;
@@ -140,7 +140,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::init()
     {
         // TODO handle this!
         qWarning() << "Not a local file";
-        q->setError(KTelepathy::NotALocalFile);
+        q->setError(KTp::NotALocalFile);
         q->setErrorText(i18n("This is not a local file"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         return;
@@ -207,7 +207,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
         case Tp::FileTransferStateNone:
             // This is bad
             kWarning() << "An unknown error occurred.";
-            q->setError(KTelepathy::TelepathyErrorError);
+            q->setError(KTp::TelepathyErrorError);
             q->setErrorText(i18n("An unknown error occurred"));
             QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
 	    break;
@@ -264,7 +264,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onProvideFileFinished(Tp:
     if (op->isError()) {
         kWarning() << "Unable to provide file - " <<
             op->errorName() << ":" << op->errorMessage();
-        q->setError(KTelepathy::ProvideFileError);
+        q->setError(KTp::ProvideFileError);
         q->setErrorText(i18n("Cannot provide file"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
     }
@@ -278,7 +278,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onCancelOperationFinished
     if (op->isError()) {
         kWarning() << "Unable to cancel file transfer - " <<
             op->errorName() << ":" << op->errorMessage();
-        q->setError(KTelepathy::CancelFileTransferError);
+        q->setError(KTp::CancelFileTransferError);
         q->setErrorText(i18n("Cannot cancel outgoing file transfer"));
     }
 
