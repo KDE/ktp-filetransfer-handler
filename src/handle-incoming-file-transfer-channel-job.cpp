@@ -30,10 +30,10 @@
 #include <kio/global.h>
 #include <kjobtrackerinterface.h>
 
-#include <TelepathyQt4/IncomingFileTransferChannel>
-#include <TelepathyQt4/PendingReady>
-#include <TelepathyQt4/PendingOperation>
-#include <TelepathyQt4/Contact>
+#include <TelepathyQt/IncomingFileTransferChannel>
+#include <TelepathyQt/PendingReady>
+#include <TelepathyQt/PendingOperation>
+#include <TelepathyQt/Contact>
 
 
 class HandleIncomingFileTransferChannelJobPrivate : public KTp::TelepathyBaseJobPrivate

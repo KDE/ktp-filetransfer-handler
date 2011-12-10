@@ -18,8 +18,8 @@
 #ifndef TELEPATHY_KDE_FILETRANSFER_HANDLER_H
 #define TELEPATHY_KDE_FILETRANSFER_HANDLER_H
 
-#include <TelepathyQt4/AbstractClientHandler>
-#include <TelepathyQt4/Types>
+#include <TelepathyQt/AbstractClientHandler>
+#include <TelepathyQt/Types>
 
 class KJob;
 namespace Tp

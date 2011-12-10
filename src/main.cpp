@@ -22,8 +22,8 @@
 #include <KAboutData>
 #include <KCmdLineArgs>
 #include <KDebug>
-#include <TelepathyQt4/ClientRegistrar>
-#include <TelepathyQt4/FileTransferChannel>
+#include <TelepathyQt/ClientRegistrar>
+#include <TelepathyQt/FileTransferChannel>
 
 
 int main(int argc, char* argv[])
