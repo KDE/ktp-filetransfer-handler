@@ -4,10 +4,9 @@ set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODUL
 
 set(IS_TELEPATHY_KDE_INTERNAL_MODULE TRUE)
 set(KDE_MIN_VERSION "4.6.0")
-set(TELEPATHY_QT4_MIN_VERSION "0.7.3")
 
 find_package (KDE4 ${KDE_MIN_VERSION} REQUIRED)
-find_package (TelepathyQt4 ${TELEPATHY_QT4_MIN_VERSION} REQUIRED)
+find_package (TelepathyQt4 0.8.9 REQUIRED)
 find_package (KTelepathy REQUIRED)
 
 include (CheckIncludeFiles)
