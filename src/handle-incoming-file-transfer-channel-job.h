@@ -21,8 +21,8 @@
 
 #include <telepathy-base-job.h>
 
-#include <TelepathyQt4/Constants>
-#include <TelepathyQt4/Types>
+#include <TelepathyQt/Constants>
+#include <TelepathyQt/Types>
 
 namespace Tp {
     class PendingOperation;

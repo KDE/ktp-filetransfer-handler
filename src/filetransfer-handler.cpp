@@ -22,9 +22,9 @@
 
 #include <KTelepathy/telepathy-handler-application.h>
 
-#include <TelepathyQt4/ChannelClassSpecList>
-#include <TelepathyQt4/IncomingFileTransferChannel>
-#include <TelepathyQt4/OutgoingFileTransferChannel>
+#include <TelepathyQt/ChannelClassSpecList>
+#include <TelepathyQt/IncomingFileTransferChannel>
+#include <TelepathyQt/OutgoingFileTransferChannel>
 
 #include <KSharedConfig>
 #include <KConfigGroup>
@@ -97,7 +97,7 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
         kDebug() << outgoingFileTransferChannel->immutableProperties();
 
         if (outgoingFileTransferChannel->uri().isEmpty()) {
-            context->setFinishedWithError(QLatin1String(TELEPATHY_QT4_ERROR_INCONSISTENT),
+            context->setFinishedWithError(TP_QT_ERROR_INCONSISTENT,
                                           i18n("Cannot handle outgoing file transfer without URI"));
         }
 

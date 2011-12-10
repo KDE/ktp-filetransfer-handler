@@ -20,7 +20,7 @@
 
 #include "telepathy-base-job_p.h"
 
-#include <TelepathyQt4/PendingOperation>
+#include <TelepathyQt/PendingOperation>
 
 #include <KLocalizedString>
 #include <KDebug>
