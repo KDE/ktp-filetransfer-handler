@@ -46,7 +46,7 @@ class HandleIncomingFileTransferChannelJobPrivate : public KTp::TelepathyBaseJob
 
         Tp::IncomingFileTransferChannelPtr channel;
         QString downloadDirectory;
-        KUrl url;
+        KUrl url, partUrl;
         qulonglong offset;
         QFile* file;
 
@@ -170,6 +170,10 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
     url.addPath(channel->fileName());
     url.setScheme(QLatin1String("file"));
 
+    partUrl = url.directory();
+    partUrl.addPath(url.fileName() + QLatin1String(".part"));
+    partUrl.setScheme(QLatin1String("file"));
+
     // We set the description here and then whe update it if path is changed.
     Q_EMIT q->description(q, i18n("Incoming file transfer"),
                           qMakePair<QString, QString>(i18n("From"), channel->targetContact()->alias()),
@@ -221,16 +225,24 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
                 renameDialog.data()->deleteLater();
                 QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
                 return;
+            QFileInfo fileInfo(partUrl.toLocalFile());
+            offset = fileInfo.size();
+            break;
         }
         renameDialog.data()->deleteLater();
     }
 
-    // TODO check if a .part file already exists ask user if file should be
-    //      resumed and set offset accordingly
     offset = 0;
 
-    file = new QFile(url.toLocalFile(), q->parent());
-    kDebug() << "Saving file as" << file->fileName();
+    // Open the .part file in append mode
+    file = new QFile(partUrl.toLocalFile(), q->parent());
+    file->open(QIODevice::WriteOnly);
+    //TODO ask to resume partial file
+    //file->open(QIODevice::Append);
+
+    // Create an empty file with the definitive file name
+    QFile realFile(url.toLocalFile(), 0);
+    realFile.open(QIODevice::WriteOnly);
 
     Tp::PendingOperation* setUriOperation = channel->setUri(url.url());
     q->connect(setUriOperation,
@@ -299,10 +311,19 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
             QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         break;
         case Tp::FileTransferStateCompleted:
+        {
+            QFileInfo fileinfo(url.toLocalFile());
+            if (fileinfo.exists()) {
+                QFile::remove(url.toLocalFile());
+            }
+            file->rename(url.toLocalFile());
+            file->flush();
+            file->close();
             kDebug() << "Incoming file transfer completed, saved at" << file->fileName();
             Q_EMIT q->infoMessage(q, i18n("Incoming file transfer")); // [Finished] is added automatically to the notification
             QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
             break;
+        }
         case Tp::FileTransferStateCancelled:
             q->setError(KTp::FileTransferCancelled);
             q->setErrorText(i18n("Incoming file transfer was canceled."));
