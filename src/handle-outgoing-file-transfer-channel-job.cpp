@@ -44,6 +44,7 @@ class HandleOutgoingFileTransferChannelJobPrivate : public KTp::TelepathyBaseJob
         Tp::OutgoingFileTransferChannelPtr channel;
         QFile* file;
         KUrl uri;
+        qulonglong offset;
 
         void init();
         void provideFile();
@@ -51,6 +52,7 @@ class HandleOutgoingFileTransferChannelJobPrivate : public KTp::TelepathyBaseJob
         void __k__start();
         bool __k__kill();
 
+        void __k__onInitialOffsetDefined(qulonglong offset);
         void __k__onFileTransferChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason);
         void __k__onFileTransferChannelTransferredBytesChanged(qulonglong count);
         void __k__onProvideFileFinished(Tp::PendingOperation* op);
@@ -92,7 +94,8 @@ bool HandleOutgoingFileTransferChannelJob::doKill()
 }
 
 HandleOutgoingFileTransferChannelJobPrivate::HandleOutgoingFileTransferChannelJobPrivate()
-    : file(0)
+    : file(0),
+      offset(0)
 {
     kDebug();
 }
@@ -153,6 +156,9 @@ void HandleOutgoingFileTransferChannelJobPrivate::init()
                SIGNAL(invalidated(Tp::DBusProxy *, const QString &, const QString &)),
                SLOT(__k__onInvalidated()));
     q->connect(channel.data(),
+               SIGNAL(initialOffsetDefined(qulonglong)),
+               SLOT(__k__onInitialOffsetDefined(qulonglong)));
+    q->connect(channel.data(),
                SIGNAL(stateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)),
                SLOT(__k__onFileTransferChannelStateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)));
     q->connect(channel.data(),
@@ -191,6 +197,15 @@ bool HandleOutgoingFileTransferChannelJobPrivate::__k__kill()
                SIGNAL(finished(Tp::PendingOperation*)),
                SLOT(__k__onCancelOperationFinished(Tp::PendingOperation*)));
     return true;
+}
+
+void HandleOutgoingFileTransferChannelJobPrivate::__k__onInitialOffsetDefined(qulonglong offset)
+{
+    kDebug();
+    Q_Q(HandleOutgoingFileTransferChannelJob);
+
+    this->offset = offset;
+    q->setProcessedAmount(KJob::Bytes, offset);
 }
 
 void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelStateChanged(Tp::FileTransferState state,

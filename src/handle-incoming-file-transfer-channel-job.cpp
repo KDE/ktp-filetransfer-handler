@@ -55,6 +55,7 @@ class HandleIncomingFileTransferChannelJobPrivate : public KTp::TelepathyBaseJob
         bool __k__kill();
 
         void __k__onSetUriOperationFinished(Tp::PendingOperation* op);
+        void __k__onInitialOffsetDefined(qulonglong offset);
         void __k__onFileTransferChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason);
         void __k__onFileTransferChannelTransferredBytesChanged(qulonglong count);
         void __k__onAcceptFileFinished(Tp::PendingOperation* op);
@@ -140,6 +141,9 @@ void HandleIncomingFileTransferChannelJobPrivate::init()
                SIGNAL(invalidated(Tp::DBusProxy *, const QString &, const QString &)),
                SLOT(__k__onInvalidated()));
     q->connect(channel.data(),
+               SIGNAL(initialOffsetDefined(qulonglong)),
+               SLOT(__k__onInitialOffsetDefined(qulonglong)));
+    q->connect(channel.data(),
                SIGNAL(stateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)),
                SLOT(__k__onFileTransferChannelStateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)));
     q->connect(channel.data(),
@@ -159,10 +163,11 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
         return;
     }
 
+    offset = 0;
+
     KUrl url(downloadDirectory);
     url.addPath(channel->fileName());
     url.setScheme(QLatin1String("file"));
-    kDebug() << "File name:" << url;
 
     // We set the description here and then whe update it if path is changed.
     Q_EMIT q->description(q, i18n("Incoming file transfer"),
@@ -260,6 +265,20 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onSetUriOperationFinished
     q->connect(acceptFileOperation,
                SIGNAL(finished(Tp::PendingOperation*)),
                SLOT(__k__onAcceptFileFinished(Tp::PendingOperation*)));
+}
+
+void HandleIncomingFileTransferChannelJobPrivate::__k__onInitialOffsetDefined(qulonglong offset)
+{
+    kDebug();
+    Q_Q(HandleIncomingFileTransferChannelJob);
+
+    for (int i=0; i<30; i++)
+        kDebug() << "__k__onInitialOffsetDefined" << offset;
+    this->offset = offset;
+    // Some protocols do not support resuming file transfers, therefore we need
+    // To connect to this method to set the real
+    file->seek(offset);
+    q->setProcessedAmount(KJob::Bytes, offset);
 }
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStateChanged(Tp::FileTransferState state,
