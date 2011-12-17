@@ -91,9 +91,7 @@ void HandleIncomingFileTransferChannelJob::start()
 
 bool HandleIncomingFileTransferChannelJob::doKill()
 {
-    kWarning() << "Incoming file transfer was canceled.";
-    setError(KTp::FileTransferCancelled);
-    setErrorText(i18n("Incoming file transfer was canceled."));
+    kDebug() << "Incoming file transfer killed.";
     KIO::getJobTracker()->unregisterJob(this);
     QTimer::singleShot(0, this, SLOT(__k__kill()));
     return true;
@@ -287,6 +285,8 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
             QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
             break;
         case Tp::FileTransferStateCancelled:
+            q->setError(KTp::FileTransferCancelled);
+            q->setErrorText(i18n("Incoming file transfer was canceled."));
             q->kill(KJob::Quietly);
             break;
         case Tp::FileTransferStateAccepted:
