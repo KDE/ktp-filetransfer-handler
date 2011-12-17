@@ -88,6 +88,7 @@ bool HandleOutgoingFileTransferChannelJob::doKill()
     kWarning() << "Outgoing file transfer was canceled.";
     setError(KTp::FileTransferCancelled);
     setErrorText(i18n("Outgoing file transfer was canceled."));
+    KIO::getJobTracker()->unregisterJob(this);
     QTimer::singleShot(0, this, SLOT(__k__kill()));
     return true;
 }

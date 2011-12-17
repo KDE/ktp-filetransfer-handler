@@ -94,6 +94,7 @@ bool HandleIncomingFileTransferChannelJob::doKill()
     kWarning() << "Incoming file transfer was canceled.";
     setError(KTp::FileTransferCancelled);
     setErrorText(i18n("Incoming file transfer was canceled."));
+    KIO::getJobTracker()->unregisterJob(this);
     QTimer::singleShot(0, this, SLOT(__k__kill()));
     return true;
 }
