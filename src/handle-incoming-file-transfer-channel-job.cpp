@@ -46,6 +46,7 @@ class HandleIncomingFileTransferChannelJobPrivate : public KTp::TelepathyBaseJob
 
         Tp::IncomingFileTransferChannelPtr channel;
         QString downloadDirectory;
+        KUrl url;
         qulonglong offset;
         QFile* file;
 
@@ -165,7 +166,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
 
     offset = 0;
 
-    KUrl url(downloadDirectory);
+    url = downloadDirectory;
     url.addPath(channel->fileName());
     url.setScheme(QLatin1String("file"));
 
@@ -174,9 +175,8 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
                           qMakePair<QString, QString>(i18n("From"), channel->targetContact()->alias()),
                           qMakePair<QString, QString>(i18n("Filename"), url.toLocalFile()));
 
-    QFileInfo fileInfo(url.toLocalFile());
-    if (fileInfo.exists()) // TODO check if it is a dir?
-    {
+    QFileInfo fileInfo(url.toLocalFile()); // TODO check if it is a dir?
+    if (fileInfo.exists()) {
         QWeakPointer<KIO::RenameDialog> renameDialog = new KIO::RenameDialog(0,
                                                                              i18n("Incoming file exists"),
                                                                              KUrl(), //TODO
