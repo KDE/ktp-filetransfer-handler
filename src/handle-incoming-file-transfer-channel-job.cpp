@@ -425,10 +425,21 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
             break;
         }
         case Tp::FileTransferStateCancelled:
+        {
             q->setError(KTp::FileTransferCancelled);
             q->setErrorText(i18n("Incoming file transfer was canceled."));
+            // Close .part file if open
+            if (file->isOpen()) {
+                file->close();
+            }
+            // Delete the old file if exists
+            QFile oldFile(url.toLocalFile(), 0);
+            if (oldFile.exists()) {
+                oldFile.remove();
+            }
             q->kill(KJob::Quietly);
             break;
+        }
         case Tp::FileTransferStateAccepted:
         case Tp::FileTransferStatePending:
         case Tp::FileTransferStateOpen:
