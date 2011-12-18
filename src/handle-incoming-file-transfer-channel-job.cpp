@@ -46,15 +46,20 @@ class HandleIncomingFileTransferChannelJobPrivate : public KTp::TelepathyBaseJob
 
         Tp::IncomingFileTransferChannelPtr channel;
         QString downloadDirectory;
+        QFile* file;
         KUrl url, partUrl;
         qulonglong offset;
-        QFile* file;
+        QWeakPointer<KIO::RenameDialog> renameDialog;
 
         void init();
+        void checkPartFile();
+        void receiveFile();
 
         void __k__start();
         bool __k__kill();
 
+        void __k__onRenameDialogFinished(int result);
+        void __k__onResumeDialogFinished(int result);
         void __k__onSetUriOperationFinished(Tp::PendingOperation* op);
         void __k__onInitialOffsetDefined(qulonglong offset);
         void __k__onFileTransferChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason);
@@ -100,7 +105,8 @@ bool HandleIncomingFileTransferChannelJob::doKill()
 }
 
 HandleIncomingFileTransferChannelJobPrivate::HandleIncomingFileTransferChannelJobPrivate()
-    : file(0)
+    : file(0),
+      offset(0)
 {
     kDebug();
 }
@@ -164,8 +170,6 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
         return;
     }
 
-    offset = 0;
-
     url = downloadDirectory;
     url.addPath(channel->fileName());
     url.setScheme(QLatin1String("file"));
@@ -181,64 +185,156 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
 
     QFileInfo fileInfo(url.toLocalFile()); // TODO check if it is a dir?
     if (fileInfo.exists()) {
-        QWeakPointer<KIO::RenameDialog> renameDialog = new KIO::RenameDialog(0,
-                                                                             i18n("Incoming file exists"),
-                                                                             KUrl(), //TODO
-                                                                             url,
-                                                                             KIO::M_OVERWRITE,
-                                                                             fileInfo.size(),
-                                                                             channel->size(),
-                                                                             fileInfo.created().toTime_t(),
-                                                                             time_t(-1),
-                                                                             fileInfo.lastModified().toTime_t(),
-                                                                             channel->lastModificationTime().toTime_t());
+        renameDialog = new KIO::RenameDialog(0,
+                                             i18n("Incoming file exists"),
+                                             KUrl(), //TODO
+                                             url,
+                                             KIO::M_OVERWRITE,
+                                             fileInfo.size(),
+                                             channel->size(),
+                                             fileInfo.created().toTime_t(),
+                                             time_t(-1),
+                                             fileInfo.lastModified().toTime_t(),
+                                             channel->lastModificationTime().toTime_t());
+        renameDialog.data()->setFixedSize(500, 420);
 
-        renameDialog.data()->exec();
+        q->connect(q, SIGNAL(cancelled()),
+                   renameDialog.data(), SLOT(reject()));
 
-        if (!renameDialog)
-        {
-            kWarning() << "Rename dialog was deleted during event loop.";
+        q->connect(renameDialog.data(),
+                   SIGNAL(finished(int)),
+                   SLOT(__k__onRenameDialogFinished(int)));
+
+        renameDialog.data()->show();
+        return;
+    }
+    checkPartFile();
+}
+
+void HandleIncomingFileTransferChannelJobPrivate::__k__onRenameDialogFinished(int result)
+{
+    kDebug();
+    Q_Q(HandleIncomingFileTransferChannelJob);
+
+    if (!renameDialog)
+    {
+        kWarning() << "Rename dialog was deleted during event loop.";
+        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+        return;
+    }
+
+    Q_ASSERT(renameDialog.data()->result() == result);
+
+    switch (result)
+    {
+        case KIO::R_CANCEL:
+            // TODO Cancel file transfer and close channel
+            channel->cancel();
             QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
             return;
-        }
+        case KIO::R_RENAME:
+            url = renameDialog.data()->newDestUrl();
+            // url is changed, we update it here
+            Q_EMIT q->description(q, i18n("Incoming file transfer"),
+                                  qMakePair<QString, QString>(i18n("From"), channel->targetContact()->alias()),
+                                  qMakePair<QString, QString>(i18n("Filename"), url.toLocalFile()));
+            break;
+        case KIO::R_OVERWRITE:
+            break;
+        default:
+            kWarning() << "Unknown Error";
+            q->setError(KTp::KTelepathyError);
+            q->setErrorText(i18n("Unknown Error"));
+            renameDialog.data()->deleteLater();
+            QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+            return;
+    }
+    renameDialog.data()->deleteLater();
+    renameDialog.clear();
+    checkPartFile();
+}
 
-        switch (renameDialog.data()->result())
+void HandleIncomingFileTransferChannelJobPrivate::checkPartFile()
+{
+    kDebug();
+    Q_Q(HandleIncomingFileTransferChannelJob);
+
+    QFileInfo fileInfo(partUrl.toLocalFile());
+    if (fileInfo.exists()) {
+        renameDialog = new KIO::RenameDialog(0,
+                                             i18n("Would you like to resume partial download?"),
+                                             KUrl(), //TODO
+                                             partUrl,
+                                             KIO::RenameDialog_Mode(KIO::M_RESUME),
+                                             fileInfo.size(),
+                                             channel->size(),
+                                             fileInfo.created().toTime_t(),
+                                             time_t(-1),
+                                             fileInfo.lastModified().toTime_t(),
+                                             channel->lastModificationTime().toTime_t());
+        renameDialog.data()->setFixedSize(500, 420);
+
+        q->connect(q, SIGNAL(cancelled()),
+                   renameDialog.data(), SLOT(reject()));
+
+        q->connect(renameDialog.data(),
+                   SIGNAL(finished(int)),
+                   SLOT(__k__onResumeDialogFinished(int)));
+
+        renameDialog.data()->show();
+        return;
+    }
+    receiveFile();
+}
+
+
+void HandleIncomingFileTransferChannelJobPrivate::__k__onResumeDialogFinished(int result)
+{
+    kDebug();
+    Q_Q(HandleIncomingFileTransferChannelJob);
+
+    if (!renameDialog)
+    {
+        kWarning() << "Rename dialog was deleted during event loop.";
+        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+        return;
+    }
+
+    Q_ASSERT(renameDialog.data()->result() == result);
+
+    switch (result)
+    {
+        case KIO::R_CANCEL:
+            // TODO Cancel file transfer and close channel
+            channel->cancel();
+            QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+            return;
+        case KIO::R_RENAME:
+            partUrl = renameDialog.data()->newDestUrl();
+            break;
+        case KIO::R_RESUME:
         {
-            case KIO::R_CANCEL:
-                // TODO Cancel file transfer and close channel
-                channel->cancel();
-                QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
-                return;
-            case KIO::R_RENAME:
-                url = renameDialog.data()->newDestUrl();
-                // url is changed, we update it here
-                Q_EMIT q->description(q, i18n("Incoming file transfer"),
-                                      qMakePair<QString, QString>(i18n("From"), channel->targetContact()->alias()),
-                                      qMakePair<QString, QString>(i18n("Filename"), url.toLocalFile()));
-                break;
-            case KIO::R_OVERWRITE:
-                break;
-            default:
-                kWarning() << "Unknown Error";
-                q->setError(KTp::KTelepathyError);
-                q->setErrorText(i18n("Unknown Error"));
-                renameDialog.data()->deleteLater();
-                QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
-                return;
             QFileInfo fileInfo(partUrl.toLocalFile());
             offset = fileInfo.size();
             break;
         }
-        renameDialog.data()->deleteLater();
+        case KIO::R_OVERWRITE:
+        default:
+            break;
+
     }
 
-    offset = 0;
+    receiveFile();
+}
+
+void HandleIncomingFileTransferChannelJobPrivate::receiveFile()
+{
+    kDebug();
+    Q_Q(HandleIncomingFileTransferChannelJob);
 
     // Open the .part file in append mode
     file = new QFile(partUrl.toLocalFile(), q->parent());
-    file->open(QIODevice::WriteOnly);
-    //TODO ask to resume partial file
-    //file->open(QIODevice::Append);
+    file->open(QIODevice::Append);
 
     // Create an empty file with the definitive file name
     QFile realFile(url.toLocalFile(), 0);
@@ -255,10 +351,15 @@ bool HandleIncomingFileTransferChannelJobPrivate::__k__kill()
     kDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
-    Tp::PendingOperation *cancelOperation = channel->cancel();
-    q->connect(cancelOperation,
-               SIGNAL(finished(Tp::PendingOperation*)),
-               SLOT(__k__onCancelOperationFinished(Tp::PendingOperation*)));
+    if (channel->state() != Tp::FileTransferStateCancelled) {
+        Tp::PendingOperation *cancelOperation = channel->cancel();
+        q->connect(cancelOperation,
+                   SIGNAL(finished(Tp::PendingOperation*)),
+                   SLOT(__k__onCancelOperationFinished(Tp::PendingOperation*)));
+    } else {
+        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+    }
+
     return true;
 }
 
@@ -284,8 +385,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onInitialOffsetDefined(qu
     kDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
-    for (int i=0; i<30; i++)
-        kDebug() << "__k__onInitialOffsetDefined" << offset;
+    kDebug() << "__k__onInitialOffsetDefined" << offset;
     this->offset = offset;
     // Some protocols do not support resuming file transfers, therefore we need
     // To connect to this method to set the real

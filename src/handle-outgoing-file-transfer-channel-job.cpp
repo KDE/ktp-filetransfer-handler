@@ -192,10 +192,15 @@ bool HandleOutgoingFileTransferChannelJobPrivate::__k__kill()
     kDebug();
     Q_Q(HandleOutgoingFileTransferChannelJob);
 
-    Tp::PendingOperation *cancelOperation = channel->cancel();
-    q->connect(cancelOperation,
-               SIGNAL(finished(Tp::PendingOperation*)),
-               SLOT(__k__onCancelOperationFinished(Tp::PendingOperation*)));
+    if (channel->state() != Tp::FileTransferStateCancelled) {
+        Tp::PendingOperation *cancelOperation = channel->cancel();
+        q->connect(cancelOperation,
+                   SIGNAL(finished(Tp::PendingOperation*)),
+                   SLOT(__k__onCancelOperationFinished(Tp::PendingOperation*)));
+    } else {
+        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+    }
+
     return true;
 }
 
