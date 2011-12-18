@@ -49,6 +49,7 @@ class HandleIncomingFileTransferChannelJobPrivate : public KTp::TelepathyBaseJob
         QFile* file;
         KUrl url, partUrl;
         qulonglong offset;
+        bool isResuming;
         QWeakPointer<KIO::RenameDialog> renameDialog;
 
         void init();
@@ -104,7 +105,8 @@ bool HandleIncomingFileTransferChannelJob::doKill()
 
 HandleIncomingFileTransferChannelJobPrivate::HandleIncomingFileTransferChannelJobPrivate()
     : file(0),
-      offset(0)
+      offset(0),
+      isResuming(false)
 {
     kDebug();
 }
@@ -305,6 +307,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onResumeDialogFinished(in
         {
             QFileInfo fileInfo(partUrl.toLocalFile());
             offset = fileInfo.size();
+            isResuming = true;
             break;
         }
         case KIO::R_OVERWRITE:
@@ -388,13 +391,18 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__acceptFile()
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onInitialOffsetDefined(qulonglong offset)
 {
-    kDebug();
+    kDebug() << "__k__onInitialOffsetDefined" << offset;
     Q_Q(HandleIncomingFileTransferChannelJob);
 
-    kDebug() << "__k__onInitialOffsetDefined" << offset;
-    this->offset = offset;
     // Some protocols do not support resuming file transfers, therefore we need
-    // To connect to this method to set the real
+    // to use to this method to set the real offset
+    if (isResuming && offset == 0) {
+        kDebug() << "Impossible to resume file. Restarting.";
+        Q_EMIT q->infoMessage(q, i18n("Impossible to resume file transfer. Restarting."));
+    }
+
+    this->offset = offset;
+
     file->seek(offset);
     q->setProcessedAmount(KJob::Bytes, offset);
 }
