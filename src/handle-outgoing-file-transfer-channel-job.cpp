@@ -73,6 +73,7 @@ HandleOutgoingFileTransferChannelJob::HandleOutgoingFileTransferChannelJob(Tp::O
 
 HandleOutgoingFileTransferChannelJob::~HandleOutgoingFileTransferChannelJob()
 {
+    KIO::getJobTracker()->unregisterJob(this);
     kDebug();
 }
 
@@ -88,7 +89,6 @@ void HandleOutgoingFileTransferChannelJob::start()
 bool HandleOutgoingFileTransferChannelJob::doKill()
 {
     kDebug() << "Outgoing file transfer killed.";
-    KIO::getJobTracker()->unregisterJob(this);
     QTimer::singleShot(0, this, SLOT(__k__kill()));
     return true;
 }
