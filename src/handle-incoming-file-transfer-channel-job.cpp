@@ -295,14 +295,6 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onResumeDialogFinished(in
 
     switch (result)
     {
-        case KIO::R_CANCEL:
-            // TODO Cancel file transfer and close channel
-            channel->cancel();
-            QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
-            return;
-        case KIO::R_RENAME:
-            partUrl = renameDialog.data()->newDestUrl();
-            break;
         case KIO::R_RESUME:
         {
             QFileInfo fileInfo(partUrl.toLocalFile());
@@ -310,10 +302,14 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onResumeDialogFinished(in
             isResuming = true;
             break;
         }
-        case KIO::R_OVERWRITE:
+        case KIO::R_RENAME:
+            // If the user hits rename, we use the new name as the .part file
+            partUrl = renameDialog.data()->newDestUrl();
+            break;
+        case KIO::R_CANCEL:
+            // If user hits cancel .part file will be overwritten
         default:
             break;
-
     }
 
     receiveFile();
@@ -326,7 +322,7 @@ void HandleIncomingFileTransferChannelJobPrivate::receiveFile()
 
     // Open the .part file in append mode
     file = new QFile(partUrl.toLocalFile(), q->parent());
-    file->open(QIODevice::Append);
+    file->open(isResuming ? QIODevice::Append : QIODevice::WriteOnly);
 
     // Create an empty file with the definitive file name
     QFile realFile(url.toLocalFile(), 0);
