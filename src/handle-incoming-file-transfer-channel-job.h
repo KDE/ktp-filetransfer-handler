@@ -36,10 +36,7 @@ class HandleIncomingFileTransferChannelJob : public KTp::TelepathyBaseJob
     Q_DISABLE_COPY(HandleIncomingFileTransferChannelJob)
     Q_DECLARE_PRIVATE(HandleIncomingFileTransferChannelJob)
 
-//     // Our Q_PRIVATE_SLOTS who perform the real job
-    Q_PRIVATE_SLOT(d_func(), void __k__start())
-    Q_PRIVATE_SLOT(d_func(), void __k__kill())
-
+    // Our Q_PRIVATE_SLOTS who perform the real job
     Q_PRIVATE_SLOT(d_func(), void __k__onRenameDialogFinished(int result))
     Q_PRIVATE_SLOT(d_func(), void __k__onResumeDialogFinished(int result))
     Q_PRIVATE_SLOT(d_func(), void __k__onSetUriOperationFinished(Tp::PendingOperation* op))

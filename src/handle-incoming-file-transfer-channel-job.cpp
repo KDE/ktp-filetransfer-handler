@@ -52,11 +52,10 @@ class HandleIncomingFileTransferChannelJobPrivate : public KTp::TelepathyBaseJob
         QWeakPointer<KIO::RenameDialog> renameDialog;
 
         void init();
+        void start();
+        bool kill();
         void checkPartFile();
         void receiveFile();
-
-        void __k__start();
-        bool __k__kill();
 
         void __k__onRenameDialogFinished(int result);
         void __k__onResumeDialogFinished(int result);
@@ -92,14 +91,15 @@ HandleIncomingFileTransferChannelJob::~HandleIncomingFileTransferChannelJob()
 void HandleIncomingFileTransferChannelJob::start()
 {
     kDebug();
-    QTimer::singleShot(0, this, SLOT(__k__start()));
+    Q_D(HandleIncomingFileTransferChannelJob);
+    d->start();
 }
 
 bool HandleIncomingFileTransferChannelJob::doKill()
 {
     kDebug() << "Incoming file transfer killed.";
-    QTimer::singleShot(0, this, SLOT(__k__kill()));
-    return true;
+    Q_D(HandleIncomingFileTransferChannelJob);
+    return d->kill();
 }
 
 HandleIncomingFileTransferChannelJobPrivate::HandleIncomingFileTransferChannelJobPrivate()
@@ -156,7 +156,7 @@ void HandleIncomingFileTransferChannelJobPrivate::init()
                SLOT(__k__onFileTransferChannelTransferredBytesChanged(qulonglong)));
 }
 
-void HandleIncomingFileTransferChannelJobPrivate::__k__start()
+void HandleIncomingFileTransferChannelJobPrivate::start()
 {
     kDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
@@ -335,7 +335,7 @@ void HandleIncomingFileTransferChannelJobPrivate::receiveFile()
                SLOT(__k__onSetUriOperationFinished(Tp::PendingOperation*)));
 }
 
-bool HandleIncomingFileTransferChannelJobPrivate::__k__kill()
+bool HandleIncomingFileTransferChannelJobPrivate::kill()
 {
     kDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
