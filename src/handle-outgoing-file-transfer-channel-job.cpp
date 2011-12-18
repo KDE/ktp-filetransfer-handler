@@ -270,9 +270,9 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelTran
     Q_Q(HandleOutgoingFileTransferChannelJob);
 
     kDebug().nospace() << "Sending " << channel->fileName() << " - "
-                       << "Transferred bytes = " << count << " ("
-                       << ((int) (((double) count / channel->size()) * 100)) << "% done)";
-    q->setProcessedAmount(KJob::Bytes, count);
+                       << "Transferred bytes = " << offset + count << " ("
+                       << ((int) (((double) (offset + count) / channel->size()) * 100)) << "% done)";
+    q->setProcessedAmount(KJob::Bytes, offset + count);
 }
 
 void HandleOutgoingFileTransferChannelJobPrivate::__k__onProvideFileFinished(Tp::PendingOperation* op)

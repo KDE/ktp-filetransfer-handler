@@ -443,9 +443,9 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelTran
     Q_Q(HandleIncomingFileTransferChannelJob);
 
     kDebug().nospace() << "Receiving " << channel->fileName() << " - "
-                       << "transferred bytes" << " = " << count << " ("
-                       << ((int) (((double) count / channel->size()) * 100)) << "% done)";
-    q->setProcessedAmount(KJob::Bytes, count);
+                       << "transferred bytes" << " = " << offset + count << " ("
+                       << ((int) (((double) (offset + count) / channel->size()) * 100)) << "% done)";
+    q->setProcessedAmount(KJob::Bytes, offset + count);
 }
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onAcceptFileFinished(Tp::PendingOperation* op)
