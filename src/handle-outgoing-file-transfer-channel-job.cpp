@@ -47,11 +47,10 @@ class HandleOutgoingFileTransferChannelJobPrivate : public KTp::TelepathyBaseJob
         qulonglong offset;
 
         void init();
+        bool kill();
         void provideFile();
 
         void __k__start();
-        bool __k__kill();
-
         void __k__onInitialOffsetDefined(qulonglong offset);
         void __k__onFileTransferChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason);
         void __k__onFileTransferChannelTransferredBytesChanged(qulonglong count);
@@ -89,8 +88,8 @@ void HandleOutgoingFileTransferChannelJob::start()
 bool HandleOutgoingFileTransferChannelJob::doKill()
 {
     kDebug() << "Outgoing file transfer killed.";
-    QTimer::singleShot(0, this, SLOT(__k__kill()));
-    return true;
+    Q_D(HandleOutgoingFileTransferChannelJob);
+    return d->kill();
 }
 
 HandleOutgoingFileTransferChannelJobPrivate::HandleOutgoingFileTransferChannelJobPrivate()
@@ -187,7 +186,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__start()
     }
 }
 
-bool HandleOutgoingFileTransferChannelJobPrivate::__k__kill()
+bool HandleOutgoingFileTransferChannelJobPrivate::kill()
 {
     kDebug();
     Q_Q(HandleOutgoingFileTransferChannelJob);
