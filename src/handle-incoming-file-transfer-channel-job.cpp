@@ -64,6 +64,7 @@ class HandleIncomingFileTransferChannelJobPrivate : public KTp::TelepathyBaseJob
         void __k__onInitialOffsetDefined(qulonglong offset);
         void __k__onFileTransferChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason);
         void __k__onFileTransferChannelTransferredBytesChanged(qulonglong count);
+        void __k__acceptFile();
         void __k__onAcceptFileFinished(Tp::PendingOperation* op);
         void __k__onCancelOperationFinished(Tp::PendingOperation* op);
         void __k__onInvalidated();
@@ -91,10 +92,7 @@ HandleIncomingFileTransferChannelJob::~HandleIncomingFileTransferChannelJob()
 void HandleIncomingFileTransferChannelJob::start()
 {
     kDebug();
-    KIO::getJobTracker()->registerJob(this);
-    // KWidgetJobTracker has an internal timer of 500 ms, if we don't wait here
-    // when the job description is emitted it won't be ready
-    QTimer::singleShot(500, this, SLOT(__k__start()));
+    QTimer::singleShot(0, this, SLOT(__k__start()));
 }
 
 bool HandleIncomingFileTransferChannelJob::doKill()
@@ -178,11 +176,6 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__start()
     partUrl.addPath(url.fileName() + QLatin1String(".part"));
     partUrl.setScheme(QLatin1String("file"));
 
-    // We set the description here and then whe update it if path is changed.
-    Q_EMIT q->description(q, i18n("Incoming file transfer"),
-                          qMakePair<QString, QString>(i18n("From"), channel->targetContact()->alias()),
-                          qMakePair<QString, QString>(i18n("Filename"), url.toLocalFile()));
-
     QFileInfo fileInfo(url.toLocalFile()); // TODO check if it is a dir?
     if (fileInfo.exists()) {
         renameDialog = new KIO::RenameDialog(0,
@@ -234,10 +227,6 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onRenameDialogFinished(in
             return;
         case KIO::R_RENAME:
             url = renameDialog.data()->newDestUrl();
-            // url is changed, we update it here
-            Q_EMIT q->description(q, i18n("Incoming file transfer"),
-                                  qMakePair<QString, QString>(i18n("From"), channel->targetContact()->alias()),
-                                  qMakePair<QString, QString>(i18n("Filename"), url.toLocalFile()));
             break;
         case KIO::R_OVERWRITE:
             break;
@@ -373,6 +362,23 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onSetUriOperationFinished
         // anyway. Anyway we print a message for debugging purposes.
         kWarning() << "Unable to set the URI -" << op->errorName() << ":" << op->errorMessage();
     }
+
+    KIO::getJobTracker()->registerJob(q);
+    // KWidgetJobTracker has an internal timer of 500 ms, if we don't wait here
+    // when the job description is emitted it won't be ready
+    // We set the description here and then whe update it if path is changed.
+
+    QTimer::singleShot(500, q, SLOT(__k__acceptFile()));
+}
+
+void HandleIncomingFileTransferChannelJobPrivate::__k__acceptFile()
+{
+    kDebug();
+    Q_Q(HandleIncomingFileTransferChannelJob);
+
+    Q_EMIT q->description(q, i18n("Incoming file transfer"),
+                          qMakePair<QString, QString>(i18n("From"), channel->targetContact()->alias()),
+                          qMakePair<QString, QString>(i18n("Filename"), url.toLocalFile()));
 
     Tp::PendingOperation* acceptFileOperation = channel->acceptFile(offset, file);
     q->connect(acceptFileOperation,
