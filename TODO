@@ -4,8 +4,8 @@ General:
  * Investigate if channels are closed channels when transfer ends/fails
 
 Incoming file transfers
- * save as file.part and rename at the end + resume support
- * Non modal overwrite window
  * Close window if file transfer is cancelled
+ * Ensure that when the file transfer fails or is cancelled the empty file is
+   deleted and the .part file is left
 
 Outgoing file transfers
