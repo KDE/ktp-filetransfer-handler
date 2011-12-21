@@ -109,8 +109,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::init()
     kDebug();
     Q_Q(HandleOutgoingFileTransferChannelJob);
 
-    if (channel.isNull())
-    {
+    if (channel.isNull()) {
         kError() << "Channel cannot be NULL";
         q->setError(KTp::NullChannel);
         q->setErrorText(i18n("Invalid channel"));
@@ -119,8 +118,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::init()
     }
 
     Tp::Features features = Tp::Features() << Tp::FileTransferChannel::FeatureCore;
-    if (!channel->isReady(Tp::Features() << Tp::FileTransferChannel::FeatureCore))
-    {
+    if (!channel->isReady(Tp::Features() << Tp::FileTransferChannel::FeatureCore)) {
         kError() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore";
         q->setError(KTp::FeatureNotReady);
         q->setErrorText(i18n("Channel is not ready"));
@@ -129,16 +127,14 @@ void HandleOutgoingFileTransferChannelJobPrivate::init()
     }
 
     uri = KUrl(channel->uri());
-    if (uri.isEmpty())
-    {
+    if (uri.isEmpty()) {
         qWarning() << "URI property missing";
         q->setError(KTp::UriPropertyMissing);
         q->setErrorText(i18n("URI property is missing"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         return;
     }
-    if (!uri.isLocalFile())
-    {
+    if (!uri.isLocalFile()) {
         // TODO handle this!
         qWarning() << "Not a local file";
         q->setError(KTp::NotALocalFile);
@@ -220,8 +216,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
 
     kDebug() << "Outgoing file transfer channel state changed to" << state << "with reason" << stateReason;
 
-    switch (state)
-    {
+    switch (state) {
         case Tp::FileTransferStateNone:
             // This is bad
             kWarning() << "An unknown error occurred.";

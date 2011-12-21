@@ -121,8 +121,7 @@ void HandleIncomingFileTransferChannelJobPrivate::init()
     kDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
-    if (channel.isNull())
-    {
+    if (channel.isNull()) {
         kError() << "Channel cannot be NULL";
         q->setError(KTp::NullChannel);
         q->setErrorText(i18n("Invalid channel"));
@@ -131,8 +130,7 @@ void HandleIncomingFileTransferChannelJobPrivate::init()
     }
 
     Tp::Features features = Tp::Features() << Tp::FileTransferChannel::FeatureCore;
-    if (!channel->isReady(Tp::Features() << Tp::FileTransferChannel::FeatureCore))
-    {
+    if (!channel->isReady(Tp::Features() << Tp::FileTransferChannel::FeatureCore)) {
         kError() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore";
         q->setError(KTp::FeatureNotReady);
         q->setErrorText(i18n("Channel is not ready"));
@@ -211,8 +209,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onRenameDialogFinished(in
     kDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
-    if (!renameDialog)
-    {
+    if (!renameDialog) {
         kWarning() << "Rename dialog was deleted during event loop.";
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         return;
@@ -220,8 +217,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onRenameDialogFinished(in
 
     Q_ASSERT(renameDialog.data()->result() == result);
 
-    switch (result)
-    {
+    switch (result) {
         case KIO::R_CANCEL:
             // TODO Cancel file transfer and close channel
             channel->cancel();
@@ -284,8 +280,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onResumeDialogFinished(in
     kDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
-    if (!renameDialog)
-    {
+    if (!renameDialog) {
         kWarning() << "Rename dialog was deleted during event loop.";
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         return;
@@ -293,8 +288,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onResumeDialogFinished(in
 
     Q_ASSERT(renameDialog.data()->result() == result);
 
-    switch (result)
-    {
+    switch (result) {
         case KIO::R_RESUME:
         {
             QFileInfo fileInfo(partUrl.toLocalFile());
@@ -411,8 +405,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
 
     kDebug() << "Incoming file transfer channel state changed to" << state << "with reason" << stateReason;
 
-    switch (state)
-    {
+    switch (state) {
         case Tp::FileTransferStateNone:
             // This is bad
             kWarning() << "An unknown error occurred.";
