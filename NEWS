@@ -1,4 +1,16 @@
-telepathy-kde filetransfer-handler (2011-11-18) 0.2.0
+kde-telepathy filetransfer-handler (UNRELEASED) 0.3.0
+=====================================================
+
+ * Port to new KTelepathy internal library (drf__)
+ * Port to TelepathyQt4 0.9 (drf__)
+ * Unregister jobs when killed (drdanz)
+ * Do not set error when user kills the jobs, set it on file transfer cancelled
+   instead (drdanz)
+ * Support resuming file transfer (drdanz)
+ * Non modal rename dialog (drdanz/xerdomii)
+ * Less unuseful asynchronous calls (drdanz)
+
+kde-telepathy filetransfer-handler (2011-11-18) 0.2.0
 =====================================================
 
  * Do not exit if setUri fails (drdanz)
@@ -19,7 +31,7 @@ telepathy-kde filetransfer-handler (2011-11-18) 0.2.0
  * Use common submodule (drdanz)
  * Rename DBus services, fix .client and .service files (drdanz)
 
-telepathy-kde filetransfer-handler (2011-07-27) 0.1.0
+kde-telepathy filetransfer-handler (2011-07-27) 0.1.0
 ======================================================
 
  * Update FindTelepathyQt4.cmake and search for Tp-Qt4 >= 0.7.1 (drdanz)
@@ -28,7 +40,7 @@ telepathy-kde filetransfer-handler (2011-07-27) 0.1.0
  * Use KUrl::isLocalFile() instead of comparing scheme (drdanz)
  * Make ft-handler a KApplication instead of a KUniqueApplication (drdanz/d_ed)
 
-telepathy-kde filetransfer-handler (2011-06-08) UNRELEASED
+kde-telepathy filetransfer-handler (2011-06-08) UNRELEASED
 ===========================================================
 
  * Add --debug and --persist command line options (drdanz)
@@ -37,12 +49,12 @@ telepathy-kde filetransfer-handler (2011-06-08) UNRELEASED
    already exists. (drdanz)
  * Don't stop the jobs before the file transfer has actually finished (gkiagia)
 
-telepathy-kde filetransfer-handler (2011-06-06) UNRELEASED
+kde-telepathy filetransfer-handler (2011-06-06) UNRELEASED
 ===========================================================
 
 First real commit 
 
-This is the Telepathy-KDE file transfer handler
+This is the KDE Telepathy file transfer handler
 
 WARNING: At the moment it just works for incoming file transfers and will
          overwrite any file in the $HOME/Download directory which has the same
