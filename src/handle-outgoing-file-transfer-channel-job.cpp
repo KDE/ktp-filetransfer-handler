@@ -44,13 +44,14 @@ class HandleOutgoingFileTransferChannelJobPrivate : public KTp::TelepathyBaseJob
         Tp::OutgoingFileTransferChannelPtr channel;
         QFile* file;
         KUrl uri;
+        qulonglong offset;
 
         void init();
+        bool kill();
         void provideFile();
 
         void __k__start();
-        bool __k__kill();
-
+        void __k__onInitialOffsetDefined(qulonglong offset);
         void __k__onFileTransferChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason);
         void __k__onFileTransferChannelTransferredBytesChanged(qulonglong count);
         void __k__onProvideFileFinished(Tp::PendingOperation* op);
@@ -71,6 +72,7 @@ HandleOutgoingFileTransferChannelJob::HandleOutgoingFileTransferChannelJob(Tp::O
 
 HandleOutgoingFileTransferChannelJob::~HandleOutgoingFileTransferChannelJob()
 {
+    KIO::getJobTracker()->unregisterJob(this);
     kDebug();
 }
 
@@ -85,15 +87,14 @@ void HandleOutgoingFileTransferChannelJob::start()
 
 bool HandleOutgoingFileTransferChannelJob::doKill()
 {
-    kWarning() << "Outgoing file transfer was canceled.";
-    setError(KTp::FileTransferCancelled);
-    setErrorText(i18n("Outgoing file transfer was canceled."));
-    QTimer::singleShot(0, this, SLOT(__k__kill()));
-    return true;
+    kDebug() << "Outgoing file transfer killed.";
+    Q_D(HandleOutgoingFileTransferChannelJob);
+    return d->kill();
 }
 
 HandleOutgoingFileTransferChannelJobPrivate::HandleOutgoingFileTransferChannelJobPrivate()
-    : file(0)
+    : file(0),
+      offset(0)
 {
     kDebug();
 }
@@ -108,8 +109,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::init()
     kDebug();
     Q_Q(HandleOutgoingFileTransferChannelJob);
 
-    if (channel.isNull())
-    {
+    if (channel.isNull()) {
         kError() << "Channel cannot be NULL";
         q->setError(KTp::NullChannel);
         q->setErrorText(i18n("Invalid channel"));
@@ -118,8 +118,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::init()
     }
 
     Tp::Features features = Tp::Features() << Tp::FileTransferChannel::FeatureCore;
-    if (!channel->isReady(Tp::Features() << Tp::FileTransferChannel::FeatureCore))
-    {
+    if (!channel->isReady(Tp::Features() << Tp::FileTransferChannel::FeatureCore)) {
         kError() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore";
         q->setError(KTp::FeatureNotReady);
         q->setErrorText(i18n("Channel is not ready"));
@@ -128,16 +127,14 @@ void HandleOutgoingFileTransferChannelJobPrivate::init()
     }
 
     uri = KUrl(channel->uri());
-    if (uri.isEmpty())
-    {
+    if (uri.isEmpty()) {
         qWarning() << "URI property missing";
         q->setError(KTp::UriPropertyMissing);
         q->setErrorText(i18n("URI property is missing"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         return;
     }
-    if (!uri.isLocalFile())
-    {
+    if (!uri.isLocalFile()) {
         // TODO handle this!
         qWarning() << "Not a local file";
         q->setError(KTp::NotALocalFile);
@@ -153,6 +150,9 @@ void HandleOutgoingFileTransferChannelJobPrivate::init()
     q->connect(channel.data(),
                SIGNAL(invalidated(Tp::DBusProxy *, const QString &, const QString &)),
                SLOT(__k__onInvalidated()));
+    q->connect(channel.data(),
+               SIGNAL(initialOffsetDefined(qulonglong)),
+               SLOT(__k__onInitialOffsetDefined(qulonglong)));
     q->connect(channel.data(),
                SIGNAL(stateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)),
                SLOT(__k__onFileTransferChannelStateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)));
@@ -182,16 +182,30 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__start()
     }
 }
 
-bool HandleOutgoingFileTransferChannelJobPrivate::__k__kill()
+bool HandleOutgoingFileTransferChannelJobPrivate::kill()
 {
     kDebug();
     Q_Q(HandleOutgoingFileTransferChannelJob);
 
-    Tp::PendingOperation *cancelOperation = channel->cancel();
-    q->connect(cancelOperation,
-               SIGNAL(finished(Tp::PendingOperation*)),
-               SLOT(__k__onCancelOperationFinished(Tp::PendingOperation*)));
+    if (channel->state() != Tp::FileTransferStateCancelled) {
+        Tp::PendingOperation *cancelOperation = channel->cancel();
+        q->connect(cancelOperation,
+                   SIGNAL(finished(Tp::PendingOperation*)),
+                   SLOT(__k__onCancelOperationFinished(Tp::PendingOperation*)));
+    } else {
+        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+    }
+
     return true;
+}
+
+void HandleOutgoingFileTransferChannelJobPrivate::__k__onInitialOffsetDefined(qulonglong offset)
+{
+    kDebug();
+    Q_Q(HandleOutgoingFileTransferChannelJob);
+
+    this->offset = offset;
+    q->setProcessedAmount(KJob::Bytes, offset);
 }
 
 void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelStateChanged(Tp::FileTransferState state,
@@ -202,8 +216,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
 
     kDebug() << "Outgoing file transfer channel state changed to" << state << "with reason" << stateReason;
 
-    switch (state)
-    {
+    switch (state) {
         case Tp::FileTransferStateNone:
             // This is bad
             kWarning() << "An unknown error occurred.";
@@ -217,6 +230,8 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
             QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
             break;
         case Tp::FileTransferStateCancelled:
+            q->setError(KTp::FileTransferCancelled);
+            q->setErrorText(i18n("Outgoing file transfer was canceled."));
             q->kill(KJob::Quietly);
             break;
         case Tp::FileTransferStateAccepted:
@@ -249,9 +264,9 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelTran
     Q_Q(HandleOutgoingFileTransferChannelJob);
 
     kDebug().nospace() << "Sending " << channel->fileName() << " - "
-                       << "Transferred bytes = " << count << " ("
-                       << ((int) (((double) count / channel->size()) * 100)) << "% done)";
-    q->setProcessedAmount(KJob::Bytes, count);
+                       << "Transferred bytes = " << offset + count << " ("
+                       << ((int) (((double) (offset + count) / channel->size()) * 100)) << "% done)";
+    q->setProcessedAmount(KJob::Bytes, offset + count);
 }
 
 void HandleOutgoingFileTransferChannelJobPrivate::__k__onProvideFileFinished(Tp::PendingOperation* op)
