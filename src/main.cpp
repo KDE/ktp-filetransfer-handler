@@ -17,7 +17,7 @@
 
 #include "filetransfer-handler.h"
 
-#include <KTelepathy/telepathy-handler-application.h>
+#include <KTp/telepathy-handler-application.h>
 
 #include <KAboutData>
 #include <KCmdLineArgs>

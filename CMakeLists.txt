@@ -2,12 +2,12 @@ project (telepathy-kde-filetransfer-handler)
 
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
-set(IS_TELEPATHY_KDE_INTERNAL_MODULE TRUE)
+set(IS_KTP_INTERNAL_MODULE TRUE)
 set(KDE_MIN_VERSION "4.6.0")
 
 find_package (KDE4 ${KDE_MIN_VERSION} REQUIRED)
 find_package (TelepathyQt4 0.8.9 REQUIRED)
-find_package (KTelepathy REQUIRED)
+find_package (KTp REQUIRED)
 
 include (CheckIncludeFiles)
 include (KDE4Defaults)
@@ -20,7 +20,7 @@ add_definitions (${KDE4_DEFINITIONS}
 
 include_directories (${KDE4_INCLUDES}
                      ${TELEPATHY_QT4_INCLUDE_DIR}
-                     ${KTELEPATHY_INCLUDE_DIR}
+                     ${KTP_INCLUDE_DIR}
                      ${CMAKE_CURRENT_SOURCE_DIR}
 )
 

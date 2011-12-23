@@ -20,7 +20,7 @@
 #include "handle-incoming-file-transfer-channel-job.h"
 #include "handle-outgoing-file-transfer-channel-job.h"
 
-#include <KTelepathy/telepathy-handler-application.h>
+#include <KTp/telepathy-handler-application.h>
 
 #include <TelepathyQt/ChannelClassSpecList>
 #include <TelepathyQt/IncomingFileTransferChannel>

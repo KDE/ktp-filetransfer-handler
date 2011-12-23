@@ -230,7 +230,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onRenameDialogFinished(in
             break;
         default:
             kWarning() << "Unknown Error";
-            q->setError(KTp::KTelepathyError);
+            q->setError(KTp::KTpError);
             q->setErrorText(i18n("Unknown Error"));
             renameDialog.data()->deleteLater();
             QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
