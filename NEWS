@@ -9,6 +9,7 @@ kde-telepathy filetransfer-handler (UNRELEASED) 0.3.0
  * Support resuming file transfer (drdanz)
  * Non modal rename dialog (drdanz/xerdomii)
  * Less unuseful asynchronous calls (drdanz)
+ * Update names according to the new scheme (alin)
 
 kde-telepathy filetransfer-handler (2011-11-18) 0.2.0
 =====================================================
