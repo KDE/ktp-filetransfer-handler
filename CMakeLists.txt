@@ -1,4 +1,4 @@
-project (telepathy-kde-filetransfer-handler)
+project (ktp-filetransfer-handler)
 
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
