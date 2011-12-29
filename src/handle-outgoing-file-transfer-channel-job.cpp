@@ -37,26 +37,26 @@ class HandleOutgoingFileTransferChannelJobPrivate : public KTp::TelepathyBaseJob
 {
     Q_DECLARE_PUBLIC(HandleOutgoingFileTransferChannelJob)
 
-    public:
-        HandleOutgoingFileTransferChannelJobPrivate();
-        virtual ~HandleOutgoingFileTransferChannelJobPrivate();
+public:
+    HandleOutgoingFileTransferChannelJobPrivate();
+    virtual ~HandleOutgoingFileTransferChannelJobPrivate();
 
-        Tp::OutgoingFileTransferChannelPtr channel;
-        QFile* file;
-        KUrl uri;
-        qulonglong offset;
+    Tp::OutgoingFileTransferChannelPtr channel;
+    QFile* file;
+    KUrl uri;
+    qulonglong offset;
 
-        void init();
-        bool kill();
-        void provideFile();
+    void init();
+    bool kill();
+    void provideFile();
 
-        void __k__start();
-        void __k__onInitialOffsetDefined(qulonglong offset);
-        void __k__onFileTransferChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason);
-        void __k__onFileTransferChannelTransferredBytesChanged(qulonglong count);
-        void __k__onProvideFileFinished(Tp::PendingOperation* op);
-        void __k__onCancelOperationFinished(Tp::PendingOperation* op);
-        void __k__onInvalidated();
+    void __k__start();
+    void __k__onInitialOffsetDefined(qulonglong offset);
+    void __k__onFileTransferChannelStateChanged(Tp::FileTransferState state, Tp::FileTransferStateChangeReason reason);
+    void __k__onFileTransferChannelTransferredBytesChanged(qulonglong count);
+    void __k__onProvideFileFinished(Tp::PendingOperation* op);
+    void __k__onCancelOperationFinished(Tp::PendingOperation* op);
+    void __k__onInvalidated();
 };
 
 HandleOutgoingFileTransferChannelJob::HandleOutgoingFileTransferChannelJob(Tp::OutgoingFileTransferChannelPtr channel,
@@ -217,30 +217,30 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
     kDebug() << "Outgoing file transfer channel state changed to" << state << "with reason" << stateReason;
 
     switch (state) {
-        case Tp::FileTransferStateNone:
-            // This is bad
-            kWarning() << "An unknown error occurred.";
-            q->setError(KTp::TelepathyErrorError);
-            q->setErrorText(i18n("An unknown error occurred"));
-            QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
-	    break;
-        case Tp::FileTransferStateCompleted:
-            kDebug() << "Outgoing file transfer completed";
-            Q_EMIT q->infoMessage(q, i18n("Outgoing file transfer")); // [Finished] is added automatically to the notification
-            QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
-            break;
-        case Tp::FileTransferStateCancelled:
-            q->setError(KTp::FileTransferCancelled);
-            q->setErrorText(i18n("Outgoing file transfer was canceled."));
-            q->kill(KJob::Quietly);
-            break;
-        case Tp::FileTransferStateAccepted:
-            provideFile();
-            break;
-        case Tp::FileTransferStatePending:
-        case Tp::FileTransferStateOpen:
-        default:
-            break;
+    case Tp::FileTransferStateNone:
+        // This is bad
+        kWarning() << "An unknown error occurred.";
+        q->setError(KTp::TelepathyErrorError);
+        q->setErrorText(i18n("An unknown error occurred"));
+        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+        break;
+    case Tp::FileTransferStateCompleted:
+        kDebug() << "Outgoing file transfer completed";
+        Q_EMIT q->infoMessage(q, i18n("Outgoing file transfer")); // [Finished] is added automatically to the notification
+        QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
+        break;
+    case Tp::FileTransferStateCancelled:
+        q->setError(KTp::FileTransferCancelled);
+        q->setErrorText(i18n("Outgoing file transfer was canceled."));
+        q->kill(KJob::Quietly);
+        break;
+    case Tp::FileTransferStateAccepted:
+        provideFile();
+        break;
+    case Tp::FileTransferStatePending:
+    case Tp::FileTransferStateOpen:
+    default:
+        break;
     }
 }
 
@@ -265,7 +265,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onFileTransferChannelTran
 
     kDebug().nospace() << "Sending " << channel->fileName() << " - "
                        << "Transferred bytes = " << offset + count << " ("
-                       << ((int) (((double) (offset + count) / channel->size()) * 100)) << "% done)";
+                       << ((int)(((double)(offset + count) / channel->size()) * 100)) << "% done)";
     q->setProcessedAmount(KJob::Bytes, offset + count);
 }
 
@@ -277,8 +277,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onProvideFileFinished(Tp:
     Q_Q(HandleOutgoingFileTransferChannelJob);
 
     if (op->isError()) {
-        kWarning() << "Unable to provide file - " <<
-            op->errorName() << ":" << op->errorMessage();
+        kWarning() << "Unable to provide file - " << op->errorName() << ":" << op->errorMessage();
         q->setError(KTp::ProvideFileError);
         q->setErrorText(i18n("Cannot provide file"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
@@ -291,8 +290,7 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onCancelOperationFinished
     Q_Q(HandleOutgoingFileTransferChannelJob);
 
     if (op->isError()) {
-        kWarning() << "Unable to cancel file transfer - " <<
-            op->errorName() << ":" << op->errorMessage();
+        kWarning() << "Unable to cancel file transfer - " << op->errorName() << ":" << op->errorMessage();
         q->setError(KTp::CancelFileTransferError);
         q->setErrorText(i18n("Cannot cancel outgoing file transfer"));
     }

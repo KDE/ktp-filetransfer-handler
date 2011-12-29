@@ -110,7 +110,7 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
                 SLOT(onInfoMessage(KJob*, QString, QString)));
         connect(job,
                 SIGNAL(result(KJob*)),
-                SLOT  (handleResult(KJob*)));
+                SLOT(handleResult(KJob*)));
         job->start();
     }
 }
@@ -125,7 +125,7 @@ void FileTransferHandler::onInfoMessage(KJob* job, const QString &plain, const Q
 void FileTransferHandler::handleResult(KJob* job)
 {
     kDebug();
-    if ( job->error() ) {
+    if (job->error()) {
         kWarning() << job->errorString();
         // TODO do something;
     }

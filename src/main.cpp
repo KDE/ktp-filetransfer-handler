@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
                                                                    contactFactory);
 
     Tp::SharedPtr<FileTransferHandler> fth = Tp::SharedPtr<FileTransferHandler>(new FileTransferHandler(&app));
-    if(!registrar->registerClient(Tp::AbstractClientPtr(fth), QLatin1String("KTp.FileTransferHandler"))) {
+    if (!registrar->registerClient(Tp::AbstractClientPtr(fth), QLatin1String("KTp.FileTransferHandler"))) {
         kDebug() << "File Transfer Handler already running. Exiting";
         return 1;
     }

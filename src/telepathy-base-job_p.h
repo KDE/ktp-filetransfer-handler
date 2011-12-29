@@ -23,11 +23,13 @@
 #include "telepathy-base-job.h"
 
 
-namespace Tp {
+namespace Tp
+{
 class PendingOperation;
 }
 
-namespace KTp {
+namespace KTp
+{
 
 class TelepathyBaseJobPrivate
 {
