@@ -1,4 +1,4 @@
-kde-telepathy filetransfer-handler (UNRELEASED) 0.3.0
+kde-telepathy filetransfer-handler (2012-01-25) 0.3.0
 =====================================================
 
  * Port to new KTelepathy internal library (drf__)
