@@ -2,6 +2,9 @@ General:
  * Use Nepomuk describeResource and storeResource to send somehow an additional
    trig or rdf file.
  * Investigate if channels are closed channels when transfer ends/fails
+ * Save metadata about sender and receiver
+ * Send multiple files in a tarball and extract them on the other side
+ * Send single files compressed to save bandwidth and extract on the other side
 
 Incoming file transfers
  * Close window if file transfer is cancelled
