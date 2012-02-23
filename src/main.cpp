@@ -16,6 +16,7 @@
  */
 
 #include "filetransfer-handler.h"
+#include "version.h"
 
 #include <KTp/telepathy-handler-application.h>
 
@@ -31,7 +32,7 @@ int main(int argc, char* argv[])
     KAboutData aboutData("ktp-filetransfer-handler",
                          "ktp-filetransfer-handler",
                          ki18n("Telepathy File Transfer Handler"),
-                         "0.3.60");
+                         KTP_FILETRANSFER_HANDLER_VERSION);
     aboutData.addAuthor(ki18n("Daniele E. Domenichelli"), ki18n("Developer"), "daniele.domenichelli@gmail.com");
     aboutData.setProductName("telepathy/filetransfer");
 

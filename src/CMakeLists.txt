@@ -6,6 +6,8 @@ set (ktp_filetransfer_handler_SRCS
      handle-outgoing-file-transfer-channel-job.cpp
 )
 
+configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+
 kde4_add_executable(ktp-filetransfer-handler ${ktp_filetransfer_handler_SRCS})
 
 target_link_libraries(ktp-filetransfer-handler
