@@ -143,14 +143,14 @@ void HandleIncomingFileTransferChannelJobPrivate::init()
     q->setProcessedAmount(KJob::Bytes, 0);
 
     q->connect(channel.data(),
-               SIGNAL(invalidated(Tp::DBusProxy*, QString, QString)),
+               SIGNAL(invalidated(Tp::DBusProxy*,QString,QString)),
                SLOT(__k__onInvalidated()));
     q->connect(channel.data(),
                SIGNAL(initialOffsetDefined(qulonglong)),
                SLOT(__k__onInitialOffsetDefined(qulonglong)));
     q->connect(channel.data(),
-               SIGNAL(stateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)),
-               SLOT(__k__onFileTransferChannelStateChanged(Tp::FileTransferState, Tp::FileTransferStateChangeReason)));
+               SIGNAL(stateChanged(Tp::FileTransferState,Tp::FileTransferStateChangeReason)),
+               SLOT(__k__onFileTransferChannelStateChanged(Tp::FileTransferState,Tp::FileTransferStateChangeReason)));
     q->connect(channel.data(),
                SIGNAL(transferredBytesChanged(qulonglong)),
                SLOT(__k__onFileTransferChannelTransferredBytesChanged(qulonglong)));
