@@ -68,7 +68,7 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
     if (KTp::TelepathyHandlerApplication::newJob() >= 0) {
         context->setFinished();
     } else {
-        context->setFinishedWithError(QLatin1String("org.freedesktop.Telepathy.KDE.FileTransfer.Exiting"),
+        context->setFinishedWithError(QLatin1String("org.freedesktop.Telepathy.KTp.FileTransferHandler.Exiting"),
                                       i18n("File transfer handler is exiting. Cannot start job"));
         return;
     }
