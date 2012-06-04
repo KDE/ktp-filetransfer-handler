@@ -1,5 +1,8 @@
-kde-telepathy filetransfer-handler (UNRELEASED) 0.4.0
+kde-telepathy filetransfer-handler (2012-06-04) 0.4.0
 
+ * Bump TelepathyQt4 required version to 0.9.1 (drdanz)
+ * Fix error name (drdanz)
+ * Normalize signal/slot signatures (mck182)
  * Set version in using CMake instead of hardcoding in main.cpp (drdanz)
 
 kde-telepathy filetransfer-handler (2012-01-25) 0.3.0
