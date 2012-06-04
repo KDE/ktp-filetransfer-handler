@@ -32,9 +32,26 @@ int main(int argc, char* argv[])
     KAboutData aboutData("ktp-filetransfer-handler",
                          "ktp-filetransfer-handler",
                          ki18n("Telepathy File Transfer Handler"),
-                         KTP_FILETRANSFER_HANDLER_VERSION);
-    aboutData.addAuthor(ki18n("Daniele E. Domenichelli"), ki18n("Developer"), "daniele.domenichelli@gmail.com");
+                         KTP_FILETRANSFER_HANDLER_VERSION,
+                         ki18n("Handles your Telepathy file transfers"),
+                         KAboutData::License_GPL_V2,
+                         ki18n("Copyright (C) 2010, 2011, 2012 Daniele E. Domenichelli <daniele.domenichelli@gmail.com>"));
+    aboutData.addAuthor(ki18n("Daniele E. Domenichelli"),
+                        ki18n("Developer"),
+                        "daniele.domenichelli@gmail.com",
+                        "http://blogs.fsfe.org/drdanz/"
+                        "drdanz");
+    aboutData.addCredit(ki18n("Alin M Elena"), ki18n("Contributor"), "alinm.elena@gmail.com");
+    aboutData.addCredit(ki18n("Dario Freddi"), ki18n("Contributor"), "dario.freddi@collabora.com");
+    aboutData.addCredit(ki18n("David Edmundson"), ki18n("Contributor"), "kde@davidedmundson.co.uk");
+    aboutData.addCredit(ki18n("George Kiagiadakis"), ki18n("Contributor"), "george.kiagiadakis@collabora.com");
+    aboutData.addCredit(ki18n("Martin Klapetek"), ki18n("Contributor"), "martin.klapetek@gmail.com");
+
     aboutData.setProductName("telepathy/filetransfer");
+    aboutData.setTranslator(ki18nc("NAME OF TRANSLATORS", "Your names"),
+                            ki18nc("EMAIL OF TRANSLATORS", "Your emails"));
+    aboutData.setProgramIconName(QLatin1String("telepathy-kde"));
+    aboutData.setHomepage("http://community.kde.org/Real-Time_Communication_and_Collaboration");
 
     KCmdLineArgs::init(argc, argv, &aboutData);
     KTp::TelepathyHandlerApplication app;
