@@ -8,7 +8,7 @@ set(IS_KTP_INTERNAL_MODULE TRUE)
 set(KDE_MIN_VERSION "4.6.0")
 
 find_package (KDE4 ${KDE_MIN_VERSION} REQUIRED)
-find_package (TelepathyQt4 0.9.0 REQUIRED)
+find_package (TelepathyQt4 0.9.1 REQUIRED)
 find_package (KTp REQUIRED)
 
 include (CheckIncludeFiles)
