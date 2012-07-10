@@ -73,7 +73,7 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
         KJob* job = NULL;
 
         if (!channel->isRequested()) {
-            Tp::IncomingFileTransferChannelPtr incomingFileTransferChannel = Tp::IncomingFileTransferChannelPtr::dynamicCast(channel);
+            Tp::IncomingFileTransferChannelPtr incomingFileTransferChannel = Tp::IncomingFileTransferChannelPtr::qObjectCast(channel);
             Q_ASSERT(incomingFileTransferChannel);
 
             kDebug() << incomingFileTransferChannel->immutableProperties();
@@ -88,7 +88,7 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
 
             job = new HandleIncomingFileTransferChannelJob(incomingFileTransferChannel, downloadDirectory, this);
         } else {
-            Tp::OutgoingFileTransferChannelPtr outgoingFileTransferChannel = Tp::OutgoingFileTransferChannelPtr::dynamicCast(channel);
+            Tp::OutgoingFileTransferChannelPtr outgoingFileTransferChannel = Tp::OutgoingFileTransferChannelPtr::qObjectCast(channel);
             Q_ASSERT(outgoingFileTransferChannel);
 
             kDebug() << outgoingFileTransferChannel->immutableProperties();
