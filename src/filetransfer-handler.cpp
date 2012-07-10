@@ -67,6 +67,7 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
         if (KTp::TelepathyHandlerApplication::newJob() < 0) {
             context->setFinishedWithError(QLatin1String("org.freedesktop.Telepathy.KTp.FileTransferHandler.Exiting"),
                                           i18n("File transfer handler is exiting. Cannot start job"));
+            return;
         }
 
         KJob* job = NULL;
@@ -95,6 +96,7 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
             if (outgoingFileTransferChannel->uri().isEmpty()) {
                 context->setFinishedWithError(TP_QT_ERROR_INCONSISTENT,
                                             i18n("Cannot handle outgoing file transfer without URI"));
+                return;
             }
 
             job = new HandleOutgoingFileTransferChannelJob(outgoingFileTransferChannel, this);
