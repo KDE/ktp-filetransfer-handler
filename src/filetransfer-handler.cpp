@@ -63,56 +63,57 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
     Q_UNUSED(userActionTime);
     Q_UNUSED(handlerInfo);
 
-    Q_ASSERT(channels.size() == 1);
-
-    if (KTp::TelepathyHandlerApplication::newJob() >= 0) {
-        context->setFinished();
-    } else {
-        context->setFinishedWithError(QLatin1String("org.freedesktop.Telepathy.KTp.FileTransferHandler.Exiting"),
-                                      i18n("File transfer handler is exiting. Cannot start job"));
-        return;
-    }
-
-    KJob* job = NULL;
-
-    if (!channels.first()->isRequested()) {
-        Tp::IncomingFileTransferChannelPtr incomingFileTransferChannel = Tp::IncomingFileTransferChannelPtr::dynamicCast(channels.first());
-        Q_ASSERT(incomingFileTransferChannel);
-
-        kDebug() << incomingFileTransferChannel->immutableProperties();
-
-        KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
-        KConfigGroup filetransferConfig = config->group(QLatin1String("File Transfers"));
-
-        QString downloadDirectory = filetransferConfig.readPathEntry(QLatin1String("downloadDirectory"),
-                QDir::homePath() + QLatin1String("/") + i18nc("This is the download directory in user's home", "Downloads"));
-        kDebug() << "Download directory:" << downloadDirectory;
-        // TODO Check if directory exists
-
-        job = new HandleIncomingFileTransferChannelJob(incomingFileTransferChannel, downloadDirectory, this);
-    } else {
-        Tp::OutgoingFileTransferChannelPtr outgoingFileTransferChannel = Tp::OutgoingFileTransferChannelPtr::dynamicCast(channels.first());
-        Q_ASSERT(outgoingFileTransferChannel);
-
-        kDebug() << outgoingFileTransferChannel->immutableProperties();
-
-        if (outgoingFileTransferChannel->uri().isEmpty()) {
-            context->setFinishedWithError(TP_QT_ERROR_INCONSISTENT,
-                                          i18n("Cannot handle outgoing file transfer without URI"));
+    Q_FOREACH(const Tp::ChannelPtr &channel, channels) {
+        if (KTp::TelepathyHandlerApplication::newJob() < 0) {
+            context->setFinishedWithError(QLatin1String("org.freedesktop.Telepathy.KTp.FileTransferHandler.Exiting"),
+                                          QLatin1String("File transfer handler is exiting. Cannot start job"));
+            return;
         }
 
-        job = new HandleOutgoingFileTransferChannelJob(outgoingFileTransferChannel, this);
+        KJob* job = NULL;
+
+        if (!channel->isRequested()) {
+            Tp::IncomingFileTransferChannelPtr incomingFileTransferChannel = Tp::IncomingFileTransferChannelPtr::qObjectCast(channel);
+            Q_ASSERT(incomingFileTransferChannel);
+
+            kDebug() << incomingFileTransferChannel->immutableProperties();
+
+            KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
+            KConfigGroup filetransferConfig = config->group(QLatin1String("File Transfers"));
+
+            QString downloadDirectory = filetransferConfig.readPathEntry(QLatin1String("downloadDirectory"),
+                    QDir::homePath() + QLatin1String("/") + i18nc("This is the download directory in user's home", "Downloads"));
+            kDebug() << "Download directory:" << downloadDirectory;
+            // TODO Check if directory exists
+
+            job = new HandleIncomingFileTransferChannelJob(incomingFileTransferChannel, downloadDirectory, this);
+        } else {
+            Tp::OutgoingFileTransferChannelPtr outgoingFileTransferChannel = Tp::OutgoingFileTransferChannelPtr::qObjectCast(channel);
+            Q_ASSERT(outgoingFileTransferChannel);
+
+            kDebug() << outgoingFileTransferChannel->immutableProperties();
+
+            if (outgoingFileTransferChannel->uri().isEmpty()) {
+                kWarning() << "Cannot handle outgoing file transfer without URI";
+                KTp::TelepathyHandlerApplication::jobFinished();
+                continue;
+            }
+
+            job = new HandleOutgoingFileTransferChannelJob(outgoingFileTransferChannel, this);
+        }
+
+        if (job) {
+            connect(job,
+                    SIGNAL(infoMessage(KJob*, QString, QString)),
+                    SLOT(onInfoMessage(KJob*, QString, QString)));
+            connect(job,
+                    SIGNAL(result(KJob*)),
+                    SLOT(handleResult(KJob*)));
+            job->start();
+        }
     }
 
-    if (job) {
-        connect(job,
-                SIGNAL(infoMessage(KJob*, QString, QString)),
-                SLOT(onInfoMessage(KJob*, QString, QString)));
-        connect(job,
-                SIGNAL(result(KJob*)),
-                SLOT(handleResult(KJob*)));
-        job->start();
-    }
+    context->setFinished();
 }
 
 void FileTransferHandler::onInfoMessage(KJob* job, const QString &plain, const QString &rich)
