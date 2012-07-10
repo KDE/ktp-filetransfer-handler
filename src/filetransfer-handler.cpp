@@ -94,9 +94,9 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
             kDebug() << outgoingFileTransferChannel->immutableProperties();
 
             if (outgoingFileTransferChannel->uri().isEmpty()) {
-                context->setFinishedWithError(TP_QT_ERROR_INCONSISTENT,
-                                            i18n("Cannot handle outgoing file transfer without URI"));
-                return;
+                kWarning() << "Cannot handle outgoing file transfer without URI";
+                KTp::TelepathyHandlerApplication::jobFinished();
+                continue;
             }
 
             job = new HandleOutgoingFileTransferChannelJob(outgoingFileTransferChannel, this);
