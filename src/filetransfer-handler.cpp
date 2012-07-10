@@ -66,7 +66,7 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
     Q_FOREACH(const Tp::ChannelPtr &channel, channels) {
         if (KTp::TelepathyHandlerApplication::newJob() < 0) {
             context->setFinishedWithError(QLatin1String("org.freedesktop.Telepathy.KTp.FileTransferHandler.Exiting"),
-                                          i18n("File transfer handler is exiting. Cannot start job"));
+                                          QLatin1String("File transfer handler is exiting. Cannot start job"));
             return;
         }
 
