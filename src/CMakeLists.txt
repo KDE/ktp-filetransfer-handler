@@ -1,9 +1,9 @@
-set (ktp_filetransfer_handler_SRCS
-     main.cpp
-     filetransfer-handler.cpp
-     telepathy-base-job.cpp
-     handle-incoming-file-transfer-channel-job.cpp
-     handle-outgoing-file-transfer-channel-job.cpp
+set(ktp_filetransfer_handler_SRCS
+    main.cpp
+    filetransfer-handler.cpp
+    telepathy-base-job.cpp
+    handle-incoming-file-transfer-channel-job.cpp
+    handle-outgoing-file-transfer-channel-job.cpp
 )
 
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
