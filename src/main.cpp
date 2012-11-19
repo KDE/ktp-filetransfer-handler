@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
     aboutData.setTranslator(ki18nc("NAME OF TRANSLATORS", "Your names"),
                             ki18nc("EMAIL OF TRANSLATORS", "Your emails"));
     aboutData.setProgramIconName(QLatin1String("telepathy-kde"));
-    aboutData.setHomepage("http://community.kde.org/Real-Time_Communication_and_Collaboration");
+    aboutData.setHomepage("http://community.kde.org/KTp");
 
     KCmdLineArgs::init(argc, argv, &aboutData);
     KTp::TelepathyHandlerApplication app;
