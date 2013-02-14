@@ -226,6 +226,11 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onRenameDialogFinished(in
         url = renameDialog.data()->newDestUrl();
         break;
     case KIO::R_OVERWRITE:
+        // Delete the old file if exists
+        QFile oldFile(url.toLocalFile(), 0);
+        if (oldFile.exists()) {
+            oldFile.remove();
+        }
         break;
     default:
         kWarning() << "Unknown Error";
@@ -432,11 +437,6 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
         // Close .part file if open
         if (file && file->isOpen()) {
             file->close();
-        }
-        // Delete the old file if exists
-        QFile oldFile(url.toLocalFile(), 0);
-        if (oldFile.exists()) {
-            oldFile.remove();
         }
         q->kill(KJob::Quietly);
         break;
