@@ -190,7 +190,7 @@ void HandleIncomingFileTransferChannelJobPrivate::start()
                                              fileInfo.lastModified().toTime_t(),
                                              channel->lastModificationTime().toTime_t());
 
-        q->connect(q, SIGNAL(cancelled()),
+        q->connect(q, SIGNAL(finished(KJob*)),
                    renameDialog.data(), SLOT(reject()));
 
         q->connect(renameDialog.data(),
@@ -259,7 +259,7 @@ void HandleIncomingFileTransferChannelJobPrivate::checkPartFile()
                                              fileInfo.lastModified().toTime_t(),
                                              channel->lastModificationTime().toTime_t());
 
-        q->connect(q, SIGNAL(cancelled()),
+        q->connect(q, SIGNAL(finished(KJob*)),
                    renameDialog.data(), SLOT(reject()));
 
         q->connect(renameDialog.data(),
