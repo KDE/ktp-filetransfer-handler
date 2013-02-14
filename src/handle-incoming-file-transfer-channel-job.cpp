@@ -430,7 +430,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
         q->setError(KTp::FileTransferCancelled);
         q->setErrorText(i18n("Incoming file transfer was canceled."));
         // Close .part file if open
-        if (file->isOpen()) {
+        if (file && file->isOpen()) {
             file->close();
         }
         // Delete the old file if exists
