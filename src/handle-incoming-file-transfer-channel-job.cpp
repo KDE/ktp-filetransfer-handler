@@ -190,7 +190,7 @@ void HandleIncomingFileTransferChannelJobPrivate::start()
                                              fileInfo.lastModified().toTime_t(),
                                              channel->lastModificationTime().toTime_t());
 
-        q->connect(q, SIGNAL(cancelled()),
+        q->connect(q, SIGNAL(finished(KJob*)),
                    renameDialog.data(), SLOT(reject()));
 
         q->connect(renameDialog.data(),
@@ -226,6 +226,13 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onRenameDialogFinished(in
         url = renameDialog.data()->newDestUrl();
         break;
     case KIO::R_OVERWRITE:
+    {
+        // Delete the old file if exists
+        QFile oldFile(url.toLocalFile(), 0);
+        if (oldFile.exists()) {
+            oldFile.remove();
+        }
+    }
         break;
     default:
         kWarning() << "Unknown Error";
@@ -259,7 +266,7 @@ void HandleIncomingFileTransferChannelJobPrivate::checkPartFile()
                                              fileInfo.lastModified().toTime_t(),
                                              channel->lastModificationTime().toTime_t());
 
-        q->connect(q, SIGNAL(cancelled()),
+        q->connect(q, SIGNAL(finished(KJob*)),
                    renameDialog.data(), SLOT(reject()));
 
         q->connect(renameDialog.data(),
@@ -430,13 +437,8 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
         q->setError(KTp::FileTransferCancelled);
         q->setErrorText(i18n("Incoming file transfer was canceled."));
         // Close .part file if open
-        if (file->isOpen()) {
+        if (file && file->isOpen()) {
             file->close();
-        }
-        // Delete the old file if exists
-        QFile oldFile(url.toLocalFile(), 0);
-        if (oldFile.exists()) {
-            oldFile.remove();
         }
         q->kill(KJob::Quietly);
         break;
