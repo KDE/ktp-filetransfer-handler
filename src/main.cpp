@@ -46,6 +46,7 @@ int main(int argc, char* argv[])
     aboutData.addCredit(ki18n("David Edmundson"), ki18n("Contributor"), "kde@davidedmundson.co.uk");
     aboutData.addCredit(ki18n("George Kiagiadakis"), ki18n("Contributor"), "george.kiagiadakis@collabora.com");
     aboutData.addCredit(ki18n("Martin Klapetek"), ki18n("Contributor"), "martin.klapetek@gmail.com");
+    aboutData.addCredit(ki18n("Andrea Scarpino"), ki18n("Contributor"), "andrea@archlinux.org");
 
     aboutData.setProductName("telepathy/filetransfer");
     aboutData.setTranslator(ki18nc("NAME OF TRANSLATORS", "Your names"),
