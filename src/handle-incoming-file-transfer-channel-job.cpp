@@ -26,6 +26,7 @@
 #include <KLocalizedString>
 #include <KDebug>
 #include <KUrl>
+#include <KFileDialog>
 #include <kio/renamedialog.h>
 #include <kio/global.h>
 #include <kjobtrackerinterface.h>
@@ -46,6 +47,7 @@ public:
 
     Tp::IncomingFileTransferChannelPtr channel;
     QString downloadDirectory;
+    bool askForDownloadDirectory;
     QFile* file;
     KUrl url, partUrl;
     qulonglong offset;
@@ -55,6 +57,7 @@ public:
     void init();
     void start();
     bool kill();
+    void checkFileExists();
     void checkPartFile();
     void receiveFile();
 
@@ -72,6 +75,7 @@ public:
 
 HandleIncomingFileTransferChannelJob::HandleIncomingFileTransferChannelJob(Tp::IncomingFileTransferChannelPtr channel,
                                                                            const QString downloadDirectory,
+                                                                           bool askForDownloadDirectory,
                                                                            QObject* parent)
     : TelepathyBaseJob(*new HandleIncomingFileTransferChannelJobPrivate(), parent)
 {
@@ -80,6 +84,7 @@ HandleIncomingFileTransferChannelJob::HandleIncomingFileTransferChannelJob(Tp::I
 
     d->channel = channel;
     d->downloadDirectory = downloadDirectory;
+    d->askForDownloadDirectory = askForDownloadDirectory;
     d->init();
 }
 
@@ -104,7 +109,8 @@ bool HandleIncomingFileTransferChannelJob::doKill()
 }
 
 HandleIncomingFileTransferChannelJobPrivate::HandleIncomingFileTransferChannelJobPrivate()
-    : file(0),
+    : askForDownloadDirectory(true),
+      file(0),
       offset(0),
       isResuming(false)
 {
@@ -168,6 +174,24 @@ void HandleIncomingFileTransferChannelJobPrivate::start()
         return;
     }
 
+    if (askForDownloadDirectory) {
+        url = KFileDialog::getSaveUrl(KUrl(QLatin1String("kfiledialog:///FileTransferLastDirectory/") + channel->fileName()),
+                                      QString(), 0, QString(), KFileDialog::ConfirmOverwrite);
+        partUrl = url.directory();
+        partUrl.addPath(url.fileName() + QLatin1String(".part"));
+        partUrl.setScheme(QLatin1String("file"));
+
+        checkPartFile();
+        return;
+    }
+
+    checkFileExists();
+}
+
+void HandleIncomingFileTransferChannelJobPrivate::checkFileExists()
+{
+    Q_Q(HandleIncomingFileTransferChannelJob);
+
     url = downloadDirectory;
     url.addPath(channel->fileName());
     url.setScheme(QLatin1String("file"));
@@ -200,6 +224,7 @@ void HandleIncomingFileTransferChannelJobPrivate::start()
         renameDialog.data()->show();
         return;
     }
+
     checkPartFile();
 }
 

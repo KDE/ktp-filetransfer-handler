@@ -81,12 +81,16 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
             KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
             KConfigGroup filetransferConfig = config->group(QLatin1String("File Transfers"));
 
-            QString downloadDirectory = filetransferConfig.readPathEntry(QLatin1String("downloadDirectory"),
+            const bool alwaysAsk = filetransferConfig.readEntry(QLatin1String("alwaysAsk"), false);
+            QString downloadDirectory;
+            if (!alwaysAsk) {
+                downloadDirectory = filetransferConfig.readPathEntry(QLatin1String("downloadDirectory"),
                     QDir::homePath() + QLatin1String("/") + i18nc("This is the download directory in user's home", "Downloads"));
-            kDebug() << "Download directory:" << downloadDirectory;
+            }
+            kDebug() << "Download directory:" << downloadDirectory << "\t Always Ask:" << alwaysAsk;
             // TODO Check if directory exists
 
-            job = new HandleIncomingFileTransferChannelJob(incomingFileTransferChannel, downloadDirectory, this);
+            job = new HandleIncomingFileTransferChannelJob(incomingFileTransferChannel, downloadDirectory, alwaysAsk, this);
         } else {
             Tp::OutgoingFileTransferChannelPtr outgoingFileTransferChannel = Tp::OutgoingFileTransferChannelPtr::qObjectCast(channel);
             Q_ASSERT(outgoingFileTransferChannel);

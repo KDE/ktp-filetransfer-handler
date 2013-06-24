@@ -50,7 +50,8 @@ class HandleIncomingFileTransferChannelJob : public KTp::TelepathyBaseJob
 
 public:
     HandleIncomingFileTransferChannelJob(Tp::IncomingFileTransferChannelPtr channel,
-                                         const QString outputFileName,
+                                         const QString downloadDirectory,
+                                         bool askForDownloadDirectory,
                                          QObject* parent = 0);
     virtual ~HandleIncomingFileTransferChannelJob();
 
