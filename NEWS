@@ -1,3 +1,19 @@
+kde-telepathy filetransfer-handler (UNRELEASED) 0.7.0
+=====================================================
+
+ * Add 'Always Ask' option for filetransfer destination directory
+   (dvratil)
+
+kde-telepathy filetransfer-handler (2013-08-07) 0.6.3
+=====================================================
+
+ ---
+
+kde-telepathy filetransfer-handler (2013-05-20) 0.6.2
+=====================================================
+
+ ---
+
 kde-telepathy filetransfer-handler (2012-08-25) 0.6.1
 =====================================================
 
