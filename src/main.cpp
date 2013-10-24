@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
     aboutData.addAuthor(ki18n("Daniele E. Domenichelli"),
                         ki18n("Developer"),
                         "daniele.domenichelli@gmail.com",
-                        "http://blogs.fsfe.org/drdanz/"
+                        "http://blogs.fsfe.org/drdanz/",
                         "drdanz");
     aboutData.addCredit(ki18n("Alin M Elena"), ki18n("Contributor"), "alinm.elena@gmail.com");
     aboutData.addCredit(ki18n("Dario Freddi"), ki18n("Contributor"), "dario.freddi@collabora.com");
