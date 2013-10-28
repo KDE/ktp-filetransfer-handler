@@ -146,7 +146,7 @@ void HandleIncomingFileTransferChannelJobPrivate::init()
 
     q->setCapabilities(KJob::Killable);
     q->setTotalAmount(KJob::Bytes, channel->size());
-    q->setProcessedAmount(KJob::Bytes, 0);
+    q->setProcessedAmountAndCalculateSpeed(0);
 
     q->connect(channel.data(),
                SIGNAL(invalidated(Tp::DBusProxy*,QString,QString)),
@@ -424,7 +424,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onInitialOffsetDefined(qu
     this->offset = offset;
 
     file->seek(offset);
-    q->setProcessedAmount(KJob::Bytes, offset);
+    q->setProcessedAmountAndCalculateSpeed(offset);
 }
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStateChanged(Tp::FileTransferState state,
@@ -484,7 +484,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelTran
     kDebug().nospace() << "Receiving " << channel->fileName() << " - "
                        << "transferred bytes" << " = " << offset + count << " ("
                        << ((int)(((double)(offset + count) / channel->size()) * 100)) << "% done)";
-    q->setProcessedAmount(KJob::Bytes, offset + count);
+    q->setProcessedAmountAndCalculateSpeed(offset + count);
 }
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onAcceptFileFinished(Tp::PendingOperation* op)

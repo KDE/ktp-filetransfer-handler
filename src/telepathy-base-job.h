@@ -96,6 +96,8 @@ protected:
     explicit TelepathyBaseJob(TelepathyBaseJobPrivate &dd, QObject *parent = 0);
     virtual ~TelepathyBaseJob();
 
+    void setProcessedAmountAndCalculateSpeed(qulonglong amount);
+
     TelepathyBaseJobPrivate * const d_ptr;
 };
 

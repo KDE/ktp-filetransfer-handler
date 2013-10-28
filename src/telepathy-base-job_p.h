@@ -22,6 +22,7 @@
 
 #include "telepathy-base-job.h"
 
+#include <QTime>
 
 namespace Tp
 {
@@ -42,6 +43,8 @@ public:
     TelepathyBaseJobPrivate();
     virtual ~TelepathyBaseJobPrivate();
 
+    QTime time;
+    qulonglong alreadyProcessed;
     QList< Tp::PendingOperation* > operations;
     QList< QPair< QString, QString > > telepathyErrors;
 
