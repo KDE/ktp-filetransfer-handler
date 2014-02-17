@@ -29,6 +29,7 @@ using namespace KTp;
 
 TelepathyBaseJobPrivate::TelepathyBaseJobPrivate()
     : q_ptr(0)
+    , alreadyProcessed(0)
 {
 }
 
@@ -57,6 +58,28 @@ TelepathyBaseJob::TelepathyBaseJob(TelepathyBaseJobPrivate& dd, QObject* parent)
 TelepathyBaseJob::~TelepathyBaseJob()
 {
     delete d_ptr;
+}
+
+void TelepathyBaseJob::setProcessedAmountAndCalculateSpeed(qulonglong amount)
+{
+    kDebug() << amount;
+    Q_D(TelepathyBaseJob);
+
+    //If the transfer is starting
+    if (amount == 0) {
+        d->time = QTime::currentTime();
+    }
+
+    //If a least 1 second has passed since last update
+    int secondsSinceLastTime = d->time.secsTo(QTime::currentTime());
+    if (secondsSinceLastTime > 0) {
+        float speed = (amount - d->alreadyProcessed) / secondsSinceLastTime;
+        emitSpeed(speed);
+
+        d->time = QTime::currentTime();
+        d->alreadyProcessed = amount;
+    }
+    setProcessedAmount(Bytes, amount);
 }
 
 void TelepathyBaseJobPrivate::__k__tpOperationFinished(Tp::PendingOperation* op)
