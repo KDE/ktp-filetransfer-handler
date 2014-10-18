@@ -1,6 +1,6 @@
 project (ktp-filetransfer-handler)
 
-set(KTP_FILETRANSFER_HANDLER_VERSION "0.8.80")
+set(KTP_FILETRANSFER_HANDLER_VERSION "0.9.0")
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 cmake_policy(SET CMP0002 OLD)
