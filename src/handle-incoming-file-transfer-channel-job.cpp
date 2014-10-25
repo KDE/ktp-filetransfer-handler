@@ -49,7 +49,7 @@ public:
     QString downloadDirectory;
     bool askForDownloadDirectory;
     QFile* file;
-    KUrl url, partUrl;
+    QUrl url, partUrl;
     qulonglong offset;
     bool isResuming;
     QWeakPointer<KIO::RenameDialog> renameDialog;
@@ -177,8 +177,8 @@ void HandleIncomingFileTransferChannelJobPrivate::start()
     if (askForDownloadDirectory) {
         url = KFileDialog::getSaveUrl(KUrl(QLatin1String("kfiledialog:///FileTransferLastDirectory/") + channel->fileName()),
                                       QString(), 0, QString(), KFileDialog::ConfirmOverwrite);
-        partUrl = url.directory();
-        partUrl.addPath(url.fileName() + QLatin1String(".part"));
+
+        partUrl.setPath(url.path() + QLatin1String(".part"));
         partUrl.setScheme(QLatin1String("file"));
 
         checkPartFile();
@@ -192,27 +192,25 @@ void HandleIncomingFileTransferChannelJobPrivate::checkFileExists()
 {
     Q_Q(HandleIncomingFileTransferChannelJob);
 
-    url = downloadDirectory;
-    url.addPath(channel->fileName());
+    url = downloadDirectory + QLatin1Char('/') + channel->fileName();
     url.setScheme(QLatin1String("file"));
 
-    partUrl = url.directory();
-    partUrl.addPath(url.fileName() + QLatin1String(".part"));
+    partUrl = url.path() + QLatin1String(".part");
     partUrl.setScheme(QLatin1String("file"));
 
     QFileInfo fileInfo(url.toLocalFile()); // TODO check if it is a dir?
     if (fileInfo.exists()) {
         renameDialog = new KIO::RenameDialog(0,
                                              i18n("Incoming file exists"),
-                                             KUrl(), //TODO
+                                             QUrl(), //TODO
                                              url,
-                                             KIO::M_OVERWRITE,
+                                             KIO::RenameDialog_Overwrite,
                                              fileInfo.size(),
                                              channel->size(),
-                                             fileInfo.created().toTime_t(),
-                                             time_t(-1),
-                                             fileInfo.lastModified().toTime_t(),
-                                             channel->lastModificationTime().toTime_t());
+                                             fileInfo.created(),
+                                             QDateTime(),
+                                             fileInfo.lastModified(),
+                                             channel->lastModificationTime());
 
         q->connect(q, SIGNAL(finished(KJob*)),
                    renameDialog.data(), SLOT(reject()));
@@ -281,15 +279,15 @@ void HandleIncomingFileTransferChannelJobPrivate::checkPartFile()
     if (fileInfo.exists()) {
         renameDialog = new KIO::RenameDialog(0,
                                              i18n("Would you like to resume partial download?"),
-                                             KUrl(), //TODO
+                                             QUrl(),
                                              partUrl,
-                                             KIO::RenameDialog_Mode(KIO::M_RESUME),
+                                             KIO::RenameDialog_Resume,
                                              fileInfo.size(),
                                              channel->size(),
-                                             fileInfo.created().toTime_t(),
-                                             time_t(-1),
-                                             fileInfo.lastModified().toTime_t(),
-                                             channel->lastModificationTime().toTime_t());
+                                             fileInfo.created(),
+                                             QDateTime(),
+                                             fileInfo.lastModified(),
+                                             channel->lastModificationTime());
 
         q->connect(q, SIGNAL(finished(KJob*)),
                    renameDialog.data(), SLOT(reject()));
@@ -528,5 +526,4 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onInvalidated()
     QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
 }
 
-
-#include "handle-incoming-file-transfer-channel-job.moc"
+#include "moc_handle-incoming-file-transfer-channel-job.cpp"

@@ -20,7 +20,7 @@
 
 #include <KTp/telepathy-handler-application.h>
 
-#include <KAboutData>
+#include <K4AboutData>
 #include <KCmdLineArgs>
 #include <KDebug>
 #include <TelepathyQt/ClientRegistrar>
@@ -29,12 +29,12 @@
 
 int main(int argc, char* argv[])
 {
-    KAboutData aboutData("ktp-filetransfer-handler",
+    K4AboutData aboutData("ktp-filetransfer-handler",
                          "ktp-filetransfer-handler",
                          ki18n("Telepathy File Transfer Handler"),
                          KTP_FILETRANSFER_HANDLER_VERSION,
                          ki18n("Handles your Telepathy file transfers"),
-                         KAboutData::License_GPL_V2,
+                         K4AboutData::License_GPL_V2,
                          ki18n("Copyright (C) 2010, 2011, 2012 Daniele E. Domenichelli <daniele.domenichelli@gmail.com>"));
     aboutData.addAuthor(ki18n("Daniele E. Domenichelli"),
                         ki18n("Developer"),
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
     aboutData.setHomepage("http://community.kde.org/KTp");
 
     KCmdLineArgs::init(argc, argv, &aboutData);
-    KTp::TelepathyHandlerApplication app;
+    KTp::TelepathyHandlerApplication app(argc, argv);
 
     Tp::AccountFactoryPtr accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus());
 

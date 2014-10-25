@@ -136,4 +136,4 @@ void TelepathyBaseJobPrivate::__k__doEmitResult()
     q->emitResult();
 }
 
-#include "telepathy-base-job.moc"
+#include "moc_telepathy-base-job.cpp"

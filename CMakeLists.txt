@@ -1,29 +1,22 @@
 project (ktp-filetransfer-handler)
 
+cmake_minimum_required(VERSION 2.8.12)
+
 set(KTP_FILETRANSFER_HANDLER_VERSION "0.8.80")
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
-cmake_policy(SET CMP0002 OLD)
+find_package(ECM 1.3.0 REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_MODULE_PATH})
 
-set(IS_KTP_INTERNAL_MODULE TRUE)
-set(KDE_MIN_VERSION "4.6.0")
+find_package (KF5 REQUIRED COMPONENTS KDELibs4Support)
+find_package (Qt5 REQUIRED COMPONENTS Core)
+find_package (KTp REQUIRED)
 
-find_package(KDE4 ${KDE_MIN_VERSION} REQUIRED)
-find_package(TelepathyQt4 0.9.1 REQUIRED)
-find_package(KTp REQUIRED)
-
-include(CheckIncludeFiles)
-include(KDE4Defaults)
-include(MacroLibrary)
-
-add_definitions(${KDE4_DEFINITIONS}
-                -DQT_NO_CAST_FROM_ASCII
-                -DQT_NO_KEYWORDS
-)
-
-include_directories(${KDE4_INCLUDES}
-                    ${TELEPATHY_QT4_INCLUDE_DIR}
-                    ${KTP_INCLUDE_DIR}
-)
+include(KDEInstallDirs)
+include(KDECMakeSettings)
+include(KDECompilerSettings)
+include(ECMSetupVersion)
+include(FeatureSummary)
 
 add_subdirectory(src)
+
+feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)

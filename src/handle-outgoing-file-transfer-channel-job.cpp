@@ -310,5 +310,4 @@ void HandleOutgoingFileTransferChannelJobPrivate::__k__onInvalidated()
     QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
 }
 
-
-#include "handle-outgoing-file-transfer-channel-job.moc"
+#include "moc_handle-outgoing-file-transfer-channel-job.cpp"

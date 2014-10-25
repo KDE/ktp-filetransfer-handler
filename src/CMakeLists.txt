@@ -1,3 +1,5 @@
+include_directories(${CMAKE_BINARY_DIR})
+
 set(ktp_filetransfer_handler_SRCS
     main.cpp
     filetransfer-handler.cpp
@@ -8,14 +10,11 @@ set(ktp_filetransfer_handler_SRCS
 
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
-kde4_add_executable(ktp-filetransfer-handler ${ktp_filetransfer_handler_SRCS})
+add_executable(ktp-filetransfer-handler ${ktp_filetransfer_handler_SRCS})
 
 target_link_libraries(ktp-filetransfer-handler
-            ${KDE4_KDECORE_LIBS}
-            ${KDE4_KDEUI_LIBS}
-            ${KDE4_KIO_LIBS}
-            ${TELEPATHY_QT4_LIBRARIES}
-            ${KTP_LIBRARIES}
+            KTp::CommonInternals
+            KF5::KDELibs4Support
 )
 
 configure_file(org.freedesktop.Telepathy.Client.KTp.FileTransferHandler.service.in
