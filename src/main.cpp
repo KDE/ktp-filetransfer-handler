@@ -20,44 +20,61 @@
 
 #include <KTp/telepathy-handler-application.h>
 
-#include <K4AboutData>
-#include <KCmdLineArgs>
-#include <KDebug>
+#include <KAboutData>
+#include <KLocalizedString>
+
+#include <QDebug>
+#include <QIcon>
+
 #include <TelepathyQt/ClientRegistrar>
 #include <TelepathyQt/FileTransferChannel>
 
 
 int main(int argc, char* argv[])
 {
-    K4AboutData aboutData("ktp-filetransfer-handler",
-                         "ktp-filetransfer-handler",
-                         ki18n("Telepathy File Transfer Handler"),
+    KAboutData aboutData("ktp-filetransfer-handler",
+                         i18n("Telepathy File Transfer Handler"),
                          KTP_FILETRANSFER_HANDLER_VERSION,
-                         ki18n("Handles your Telepathy file transfers"),
-                         K4AboutData::License_GPL_V2,
-                         ki18n("Copyright (C) 2010, 2011, 2012 Daniele E. Domenichelli <daniele.domenichelli@gmail.com>"));
-    aboutData.addAuthor(ki18n("Daniele E. Domenichelli"),
-                        ki18n("Developer"),
+                         i18n("Handles your Telepathy file transfers"),
+                         KAboutLicense::GPL_V2,
+                         i18n("Copyright (C) 2010, 2011, 2012 Daniele E. Domenichelli <daniele.domenichelli@gmail.com>"));
+    aboutData.addAuthor(i18n("Daniele E. Domenichelli"),
+                        i18n("Developer"),
                         "daniele.domenichelli@gmail.com",
                         "http://blogs.fsfe.org/drdanz/",
                         "drdanz");
-    aboutData.addCredit(ki18n("Alin M Elena"), ki18n("Contributor"), "alinm.elena@gmail.com");
-    aboutData.addCredit(ki18n("Dario Freddi"), ki18n("Contributor"), "dario.freddi@collabora.com");
-    aboutData.addCredit(ki18n("David Edmundson"), ki18n("Contributor"), "kde@davidedmundson.co.uk");
-    aboutData.addCredit(ki18n("George Kiagiadakis"), ki18n("Contributor"), "george.kiagiadakis@collabora.com");
-    aboutData.addCredit(ki18n("Martin Klapetek"), ki18n("Contributor"), "martin.klapetek@gmail.com");
-    aboutData.addCredit(ki18n("Andrea Scarpino"), ki18n("Contributor"), "andrea@archlinux.org");
-    aboutData.addCredit(ki18n("Dan Vrátil"), ki18n("Contributor"), "dvratil@redhat.com");
+    aboutData.addCredit(i18n("Alin M Elena"), i18n("Contributor"), "alinm.elena@gmail.com");
+    aboutData.addCredit(i18n("Dario Freddi"), i18n("Contributor"), "dario.freddi@collabora.com");
+    aboutData.addCredit(i18n("David Edmundson"), i18n("Contributor"), "kde@davidedmundson.co.uk");
+    aboutData.addCredit(i18n("George Kiagiadakis"), i18n("Contributor"), "george.kiagiadakis@collabora.com");
+    aboutData.addCredit(i18n("Martin Klapetek"), i18n("Contributor"), "martin.klapetek@gmail.com");
+    aboutData.addCredit(i18n("Andrea Scarpino"), i18n("Contributor"), "andrea@archlinux.org");
+    aboutData.addCredit(i18n("Dan Vrátil"), i18n("Contributor"), "dvratil@redhat.com");
 
 
     aboutData.setProductName("telepathy/filetransfer");
-    aboutData.setTranslator(ki18nc("NAME OF TRANSLATORS", "Your names"),
-                            ki18nc("EMAIL OF TRANSLATORS", "Your emails"));
-    aboutData.setProgramIconName(QLatin1String("telepathy-kde"));
     aboutData.setHomepage("http://community.kde.org/KTp");
 
-    KCmdLineArgs::init(argc, argv, &aboutData);
+    KAboutData::setApplicationData(aboutData);
+
+    // This is a very very very ugly hack that attempts to solve the following problem:
+    // D-Bus service activated applications inherit the environment of dbus-daemon.
+    // Normally, in KDE, startkde sets these environment variables. However, the session's
+    // dbus-daemon is started before this happens, which means that dbus-daemon does NOT
+    // have these variables in its environment and therefore all service-activated UIs
+    // think that they are not running in KDE. This causes Qt not to load the KDE platform
+    // plugin, which leaves the UI in a sorry state, using a completely wrong theme,
+    // wrong colors, etc...
+    // See also:
+    // - https://bugs.kde.org/show_bug.cgi?id=269861
+    // - https://bugs.kde.org/show_bug.cgi?id=267770
+    // - https://git.reviewboard.kde.org/r/102194/
+    // Here we are just going to assume that kde-telepathy is always used in KDE and
+    // not anywhere else. This is probably the best that we can do.
+    setenv("KDE_FULL_SESSION", "true", 0);
+    setenv("KDE_SESSION_VERSION", "5", 0);
     KTp::TelepathyHandlerApplication app(argc, argv);
+    app.setWindowIcon(QIcon::fromTheme(QStringLiteral("telepathy-kde")));
 
     Tp::AccountFactoryPtr accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus());
 
@@ -78,7 +95,7 @@ int main(int argc, char* argv[])
 
     Tp::SharedPtr<FileTransferHandler> fth = Tp::SharedPtr<FileTransferHandler>(new FileTransferHandler(&app));
     if (!registrar->registerClient(Tp::AbstractClientPtr(fth), QLatin1String("KTp.FileTransferHandler"))) {
-        kDebug() << "File Transfer Handler already running. Exiting";
+        qDebug() << "File Transfer Handler already running. Exiting";
         return 1;
     }
 

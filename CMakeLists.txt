@@ -7,8 +7,8 @@ set(KTP_FILETRANSFER_HANDLER_VERSION "0.8.80")
 find_package(ECM 1.3.0 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_MODULE_PATH})
 
-find_package (KF5 REQUIRED COMPONENTS KDELibs4Support)
-find_package (Qt5 REQUIRED COMPONENTS Core)
+find_package (KF5 REQUIRED COMPONENTS CoreAddons I18n KIO Config)
+find_package (Qt5 REQUIRED COMPONENTS Core DBus Widgets)
 find_package (KTp REQUIRED)
 
 include(KDEInstallDirs)

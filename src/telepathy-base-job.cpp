@@ -23,7 +23,7 @@
 #include <TelepathyQt/PendingOperation>
 
 #include <KLocalizedString>
-#include <KDebug>
+#include <QDebug>
 
 using namespace KTp;
 
@@ -62,7 +62,7 @@ TelepathyBaseJob::~TelepathyBaseJob()
 
 void TelepathyBaseJob::setProcessedAmountAndCalculateSpeed(qulonglong amount)
 {
-    kDebug() << amount;
+    qDebug() << amount;
     Q_D(TelepathyBaseJob);
 
     //If the transfer is starting
@@ -108,7 +108,7 @@ void TelepathyBaseJobPrivate::__k__tpOperationFinished(Tp::PendingOperation* op)
 
 void TelepathyBaseJobPrivate::__k__doEmitResult()
 {
-    kDebug();
+    qDebug();
     Q_Q(TelepathyBaseJob);
 
     // Before streaming out: are there any telepathy errors?

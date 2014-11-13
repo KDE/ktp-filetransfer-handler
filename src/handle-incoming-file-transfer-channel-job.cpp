@@ -20,13 +20,13 @@
 #include "handle-incoming-file-transfer-channel-job.h"
 #include "telepathy-base-job_p.h"
 
-#include <QtCore/QTimer>
-#include <QtCore/QWeakPointer>
+#include <QTimer>
+#include <QUrl>
+#include <QPointer>
+#include <QDebug>
+#include <QFileDialog>
 
 #include <KLocalizedString>
-#include <KDebug>
-#include <KUrl>
-#include <KFileDialog>
 #include <kio/renamedialog.h>
 #include <kio/global.h>
 #include <kjobtrackerinterface.h>
@@ -52,7 +52,7 @@ public:
     QUrl url, partUrl;
     qulonglong offset;
     bool isResuming;
-    QWeakPointer<KIO::RenameDialog> renameDialog;
+    QPointer<KIO::RenameDialog> renameDialog;
 
     void init();
     void start();
@@ -79,7 +79,7 @@ HandleIncomingFileTransferChannelJob::HandleIncomingFileTransferChannelJob(Tp::I
                                                                            QObject* parent)
     : TelepathyBaseJob(*new HandleIncomingFileTransferChannelJobPrivate(), parent)
 {
-    kDebug();
+    qDebug();
     Q_D(HandleIncomingFileTransferChannelJob);
 
     d->channel = channel;
@@ -90,20 +90,20 @@ HandleIncomingFileTransferChannelJob::HandleIncomingFileTransferChannelJob(Tp::I
 
 HandleIncomingFileTransferChannelJob::~HandleIncomingFileTransferChannelJob()
 {
-    kDebug();
+    qDebug();
     KIO::getJobTracker()->unregisterJob(this);
 }
 
 void HandleIncomingFileTransferChannelJob::start()
 {
-    kDebug();
+    qDebug();
     Q_D(HandleIncomingFileTransferChannelJob);
     d->start();
 }
 
 bool HandleIncomingFileTransferChannelJob::doKill()
 {
-    kDebug() << "Incoming file transfer killed.";
+    qDebug() << "Incoming file transfer killed.";
     Q_D(HandleIncomingFileTransferChannelJob);
     return d->kill();
 }
@@ -114,21 +114,21 @@ HandleIncomingFileTransferChannelJobPrivate::HandleIncomingFileTransferChannelJo
       offset(0),
       isResuming(false)
 {
-    kDebug();
+    qDebug();
 }
 
 HandleIncomingFileTransferChannelJobPrivate::~HandleIncomingFileTransferChannelJobPrivate()
 {
-    kDebug();
+    qDebug();
 }
 
 void HandleIncomingFileTransferChannelJobPrivate::init()
 {
-    kDebug();
+    qDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
     if (channel.isNull()) {
-        kError() << "Channel cannot be NULL";
+        qCritical() << "Channel cannot be NULL";
         q->setError(KTp::NullChannel);
         q->setErrorText(i18n("Invalid channel"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
@@ -137,7 +137,7 @@ void HandleIncomingFileTransferChannelJobPrivate::init()
 
     Tp::Features features = Tp::Features() << Tp::FileTransferChannel::FeatureCore;
     if (!channel->isReady(Tp::Features() << Tp::FileTransferChannel::FeatureCore)) {
-        kError() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore";
+        qCritical() << "Channel must be ready with Tp::FileTransferChannel::FeatureCore";
         q->setError(KTp::FeatureNotReady);
         q->setErrorText(i18n("Channel is not ready"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
@@ -164,19 +164,18 @@ void HandleIncomingFileTransferChannelJobPrivate::init()
 
 void HandleIncomingFileTransferChannelJobPrivate::start()
 {
-    kDebug();
+    qDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
     Q_ASSERT(!q->error());
     if (q->error()) {
-        kWarning() << "Job was started in error state. Something wrong happened." << q->errorString();
+        qWarning() << "Job was started in error state. Something wrong happened." << q->errorString();
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         return;
     }
 
     if (askForDownloadDirectory) {
-        url = KFileDialog::getSaveUrl(KUrl(QLatin1String("kfiledialog:///FileTransferLastDirectory/") + channel->fileName()),
-                                      QString(), 0, QString(), KFileDialog::ConfirmOverwrite);
+        url = QFileDialog::getSaveFileUrl(0, QString(), QUrl(QLatin1String("kfiledialog:///FileTransferLastDirectory/") + channel->fileName()));
 
         partUrl.setPath(url.path() + QLatin1String(".part"));
         partUrl.setScheme(QLatin1String("file"));
@@ -228,11 +227,11 @@ void HandleIncomingFileTransferChannelJobPrivate::checkFileExists()
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onRenameDialogFinished(int result)
 {
-    kDebug();
+    qDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
     if (!renameDialog) {
-        kWarning() << "Rename dialog was deleted during event loop.";
+        qWarning() << "Rename dialog was deleted during event loop.";
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         return;
     }
@@ -258,7 +257,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onRenameDialogFinished(in
     }
         break;
     default:
-        kWarning() << "Unknown Error";
+        qWarning() << "Unknown Error";
         q->setError(KTp::KTpError);
         q->setErrorText(i18n("Unknown Error"));
         renameDialog.data()->deleteLater();
@@ -272,7 +271,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onRenameDialogFinished(in
 
 void HandleIncomingFileTransferChannelJobPrivate::checkPartFile()
 {
-    kDebug();
+    qDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
     QFileInfo fileInfo(partUrl.toLocalFile());
@@ -305,11 +304,11 @@ void HandleIncomingFileTransferChannelJobPrivate::checkPartFile()
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onResumeDialogFinished(int result)
 {
-    kDebug();
+    qDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
     if (!renameDialog) {
-        kWarning() << "Rename dialog was deleted during event loop.";
+        qWarning() << "Rename dialog was deleted during event loop.";
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         return;
     }
@@ -339,7 +338,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onResumeDialogFinished(in
 
 void HandleIncomingFileTransferChannelJobPrivate::receiveFile()
 {
-    kDebug();
+    qDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
     // Open the .part file in append mode
@@ -358,7 +357,7 @@ void HandleIncomingFileTransferChannelJobPrivate::receiveFile()
 
 bool HandleIncomingFileTransferChannelJobPrivate::kill()
 {
-    kDebug();
+    qDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
     if (channel->state() != Tp::FileTransferStateCancelled) {
@@ -375,13 +374,13 @@ bool HandleIncomingFileTransferChannelJobPrivate::kill()
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onSetUriOperationFinished(Tp::PendingOperation* op)
 {
-    kDebug();
+    qDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
     if (op->isError()) {
         // We do not want to exit if setUri failed, but we try to send the file
         // anyway. Anyway we print a message for debugging purposes.
-        kWarning() << "Unable to set the URI -" << op->errorName() << ":" << op->errorMessage();
+        qWarning() << "Unable to set the URI -" << op->errorName() << ":" << op->errorMessage();
     }
 
     KIO::getJobTracker()->registerJob(q);
@@ -394,7 +393,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onSetUriOperationFinished
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__acceptFile()
 {
-    kDebug();
+    qDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
     Q_EMIT q->description(q, i18n("Incoming file transfer"),
@@ -409,13 +408,13 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__acceptFile()
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onInitialOffsetDefined(qulonglong offset)
 {
-    kDebug() << "__k__onInitialOffsetDefined" << offset;
+    qDebug() << "__k__onInitialOffsetDefined" << offset;
     Q_Q(HandleIncomingFileTransferChannelJob);
 
     // Some protocols do not support resuming file transfers, therefore we need
     // to use to this method to set the real offset
     if (isResuming && offset == 0) {
-        kDebug() << "Impossible to resume file. Restarting.";
+        qDebug() << "Impossible to resume file. Restarting.";
         Q_EMIT q->infoMessage(q, i18n("Impossible to resume file transfer. Restarting."));
     }
 
@@ -428,15 +427,15 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onInitialOffsetDefined(qu
 void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStateChanged(Tp::FileTransferState state,
                                                                                          Tp::FileTransferStateChangeReason stateReason)
 {
-    kDebug();
+    qDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
-    kDebug() << "Incoming file transfer channel state changed to" << state << "with reason" << stateReason;
+    qDebug() << "Incoming file transfer channel state changed to" << state << "with reason" << stateReason;
 
     switch (state) {
     case Tp::FileTransferStateNone:
         // This is bad
-        kWarning() << "An unknown error occurred.";
+        qWarning() << "An unknown error occurred.";
         q->setError(KTp::TelepathyErrorError);
         q->setErrorText(i18n("An unknown error occurred"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
@@ -450,7 +449,7 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
         file->rename(url.toLocalFile());
         file->flush();
         file->close();
-        kDebug() << "Incoming file transfer completed, saved at" << file->fileName();
+        qDebug() << "Incoming file transfer completed, saved at" << file->fileName();
         Q_EMIT q->infoMessage(q, i18n("Incoming file transfer")); // [Finished] is added automatically to the notification
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
         break;
@@ -476,10 +475,10 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelStat
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onFileTransferChannelTransferredBytesChanged(qulonglong count)
 {
-    kDebug();
+    qDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
-    kDebug().nospace() << "Receiving " << channel->fileName() << " - "
+    qDebug().nospace() << "Receiving " << channel->fileName() << " - "
                        << "transferred bytes" << " = " << offset + count << " ("
                        << ((int)(((double)(offset + count) / channel->size()) * 100)) << "% done)";
     q->setProcessedAmountAndCalculateSpeed(offset + count);
@@ -489,11 +488,11 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onAcceptFileFinished(Tp::
 {
     // This method is called when the "acceptFile" operation is finished,
     // therefore the file was not received yet.
-    kDebug();
+    qDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
     if (op->isError()) {
-        kWarning() << "Unable to accept file -" << op->errorName() << ":" << op->errorMessage();
+        qWarning() << "Unable to accept file -" << op->errorName() << ":" << op->errorMessage();
         q->setError(KTp::AcceptFileError);
         q->setErrorText(i18n("Unable to accept file"));
         QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
@@ -502,25 +501,25 @@ void HandleIncomingFileTransferChannelJobPrivate::__k__onAcceptFileFinished(Tp::
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onCancelOperationFinished(Tp::PendingOperation* op)
 {
-    kDebug();
+    qDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
     if (op->isError()) {
-        kWarning() << "Unable to cancel file transfer - " << op->errorName() << ":" << op->errorMessage();
+        qWarning() << "Unable to cancel file transfer - " << op->errorName() << ":" << op->errorMessage();
         q->setError(KTp::CancelFileTransferError);
         q->setErrorText(i18n("Cannot cancel incoming file transfer"));
     }
 
-    kDebug() << "File transfer cancelled";
+    qDebug() << "File transfer cancelled";
     QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
 }
 
 void HandleIncomingFileTransferChannelJobPrivate::__k__onInvalidated()
 {
-    kDebug();
+    qDebug();
     Q_Q(HandleIncomingFileTransferChannelJob);
 
-    kWarning() << "File transfer invalidated!" << channel->invalidationMessage() << "reason" << channel->invalidationReason();
+    qWarning() << "File transfer invalidated!" << channel->invalidationMessage() << "reason" << channel->invalidationReason();
     Q_EMIT q->infoMessage(q, i18n("File transfer invalidated. %1", channel->invalidationMessage()));
 
     QTimer::singleShot(0, q, SLOT(__k__doEmitResult()));
