@@ -21,7 +21,6 @@
 #ifndef LIBKTP_TELEPATHY_BASE_JOB_H
 #define LIBKTP_TELEPATHY_BASE_JOB_H
 
-#include <kdemacros.h>
 #include <KJob>
 
 namespace KTp
@@ -83,7 +82,7 @@ enum JobError {
 };
 
 class TelepathyBaseJobPrivate;
-class KDE_EXPORT TelepathyBaseJob : public KJob
+class TelepathyBaseJob : public KJob
 {
     Q_OBJECT
     Q_DISABLE_COPY(TelepathyBaseJob)
