@@ -6,6 +6,7 @@ set(ktp_filetransfer_handler_SRCS
     telepathy-base-job.cpp
     handle-incoming-file-transfer-channel-job.cpp
     handle-outgoing-file-transfer-channel-job.cpp
+    ktp-fth-debug.cpp
 )
 
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)

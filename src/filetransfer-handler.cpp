@@ -19,6 +19,7 @@
 
 #include "handle-incoming-file-transfer-channel-job.h"
 #include "handle-outgoing-file-transfer-channel-job.h"
+#include "ktp-fth-debug.h"
 
 #include <KTp/telepathy-handler-application.h>
 
@@ -77,7 +78,7 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
             Tp::IncomingFileTransferChannelPtr incomingFileTransferChannel = Tp::IncomingFileTransferChannelPtr::qObjectCast(channel);
             Q_ASSERT(incomingFileTransferChannel);
 
-            qDebug() << incomingFileTransferChannel->immutableProperties();
+            qCDebug(KTP_FTH_MODULE) << incomingFileTransferChannel->immutableProperties();
 
             KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
             KConfigGroup filetransferConfig = config->group(QLatin1String("File Transfers"));
@@ -88,7 +89,7 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
                 downloadDirectory = filetransferConfig.readPathEntry(QLatin1String("downloadDirectory"),
                     QDir::homePath() + QLatin1String("/") + i18nc("This is the download directory in user's home", "Downloads"));
             }
-            qDebug() << "Download directory:" << downloadDirectory << "\t Always Ask:" << alwaysAsk;
+            qCDebug(KTP_FTH_MODULE) << "Download directory:" << downloadDirectory << "\t Always Ask:" << alwaysAsk;
             // TODO Check if directory exists
 
             job = new HandleIncomingFileTransferChannelJob(incomingFileTransferChannel, downloadDirectory, alwaysAsk, this);
@@ -96,10 +97,10 @@ void FileTransferHandler::handleChannels(const Tp::MethodInvocationContextPtr<> 
             Tp::OutgoingFileTransferChannelPtr outgoingFileTransferChannel = Tp::OutgoingFileTransferChannelPtr::qObjectCast(channel);
             Q_ASSERT(outgoingFileTransferChannel);
 
-            qDebug() << outgoingFileTransferChannel->immutableProperties();
+            qCDebug(KTP_FTH_MODULE) << outgoingFileTransferChannel->immutableProperties();
 
             if (outgoingFileTransferChannel->uri().isEmpty()) {
-                qWarning() << "Cannot handle outgoing file transfer without URI";
+                qCWarning(KTP_FTH_MODULE) << "Cannot handle outgoing file transfer without URI";
                 KTp::TelepathyHandlerApplication::jobFinished();
                 continue;
             }
@@ -125,14 +126,14 @@ void FileTransferHandler::onInfoMessage(KJob* job, const QString &plain, const Q
 {
     Q_UNUSED(job);
     Q_UNUSED(rich);
-    qDebug() << plain;
+    qCDebug(KTP_FTH_MODULE) << plain;
 }
 
 void FileTransferHandler::handleResult(KJob* job)
 {
-    qDebug();
+    qCDebug(KTP_FTH_MODULE);
     if (job->error()) {
-        qWarning() << job->errorString();
+        qCWarning(KTP_FTH_MODULE) << job->errorString();
         // TODO do something;
     }
 

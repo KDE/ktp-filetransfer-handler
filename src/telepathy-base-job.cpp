@@ -19,6 +19,7 @@
  */
 
 #include "telepathy-base-job_p.h"
+#include "ktp-fth-debug.h"
 
 #include <TelepathyQt/PendingOperation>
 
@@ -62,7 +63,7 @@ TelepathyBaseJob::~TelepathyBaseJob()
 
 void TelepathyBaseJob::setProcessedAmountAndCalculateSpeed(qulonglong amount)
 {
-    qDebug() << amount;
+    qCDebug(KTP_FTH_MODULE) << amount;
     Q_D(TelepathyBaseJob);
 
     //If the transfer is starting
@@ -108,7 +109,7 @@ void TelepathyBaseJobPrivate::__k__tpOperationFinished(Tp::PendingOperation* op)
 
 void TelepathyBaseJobPrivate::__k__doEmitResult()
 {
-    qDebug();
+    qCDebug(KTP_FTH_MODULE);
     Q_Q(TelepathyBaseJob);
 
     // Before streaming out: are there any telepathy errors?
