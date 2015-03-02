@@ -2,7 +2,7 @@ project (ktp-filetransfer-handler)
 
 cmake_minimum_required(VERSION 2.8.12)
 
-set(KTP_FILETRANSFER_HANDLER_VERSION "0.8.80")
+set(KTP_FILETRANSFER_HANDLER_VERSION "0.9.80")
 
 find_package(ECM 1.3.0 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} ${CMAKE_MODULE_PATH})
