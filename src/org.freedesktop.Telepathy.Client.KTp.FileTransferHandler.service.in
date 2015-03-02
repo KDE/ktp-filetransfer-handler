@@ -1,3 +1,3 @@
 [D-BUS Service]
 Name=org.freedesktop.Telepathy.Client.KTp.FileTransferHandler
-Exec=@LIBEXEC_INSTALL_DIR@/ktp-filetransfer-handler
+Exec=@CMAKE_INSTALL_FULL_LIBEXECDIR@/ktp-filetransfer-handler
