@@ -30,6 +30,8 @@
 #include <KLocalizedString>
 #include <kio/renamedialog.h>
 #include <kio/global.h>
+#include <KIOFileWidgets/KFileWidget>
+#include <KIOFileWidgets/KRecentDirs>
 #include <kjobtrackerinterface.h>
 
 #include <TelepathyQt/IncomingFileTransferChannel>
@@ -176,7 +178,15 @@ void HandleIncomingFileTransferChannelJobPrivate::start()
     }
 
     if (askForDownloadDirectory) {
-        url = QFileDialog::getSaveFileUrl(0, QString(), QUrl(QLatin1String("kfiledialog:///FileTransferLastDirectory/") + channel->fileName()));
+
+        QString recentDirClass;
+
+        url = QFileDialog::getSaveFileUrl(0, QString(),
+                                          KFileWidget::getStartUrl(QUrl(QLatin1String("kfiledialog:///FileTransferLastDirectory/") + channel->fileName()), recentDirClass));
+
+        if (!recentDirClass.isEmpty()) {
+            KRecentDirs::add(recentDirClass, url.toLocalFile());
+        }
 
         partUrl.setPath(url.path() + QLatin1String(".part"));
         partUrl.setScheme(QLatin1String("file"));

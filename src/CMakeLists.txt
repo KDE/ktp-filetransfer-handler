@@ -18,6 +18,7 @@ target_link_libraries(ktp-filetransfer-handler
             KF5::CoreAddons
             KF5::I18n
             KF5::KIOWidgets
+            KF5::KIOFileWidgets
             KF5::ConfigCore
             Qt5::Core
             Qt5::DBus
