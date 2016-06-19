@@ -188,8 +188,8 @@ void HandleIncomingFileTransferChannelJobPrivate::start()
             KRecentDirs::add(recentDirClass, url.toLocalFile());
         }
 
+        partUrl = url;
         partUrl.setPath(url.path() + QLatin1String(".part"));
-        partUrl.setScheme(QLatin1String("file"));
 
         checkPartFile();
         return;
@@ -202,11 +202,10 @@ void HandleIncomingFileTransferChannelJobPrivate::checkFileExists()
 {
     Q_Q(HandleIncomingFileTransferChannelJob);
 
-    url = downloadDirectory + QLatin1Char('/') + channel->fileName();
-    url.setScheme(QLatin1String("file"));
+    url = QUrl::fromLocalFile(downloadDirectory + QLatin1Char('/') + channel->fileName());
 
-    partUrl = url.path() + QLatin1String(".part");
-    partUrl.setScheme(QLatin1String("file"));
+    partUrl = url;
+    partUrl.setPath(url.path() + QLatin1String(".part"));
 
     QFileInfo fileInfo(url.toLocalFile()); // TODO check if it is a dir?
     if (fileInfo.exists()) {
