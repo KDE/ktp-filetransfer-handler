@@ -25,4 +25,6 @@ add_definitions(-DQT_NO_URL_CAST_FROM_STRING)
 
 add_subdirectory(src)
 
+ki18n_install(po)
+
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
