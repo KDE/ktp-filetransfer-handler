@@ -1,0 +1,228 @@
+# Copyright (C) YEAR This_file_is_part_of_KDE
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Shinjo Park <kde@peremen.name>, 2014.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2019-05-20 03:11+0200\n"
+"PO-Revision-Date: 2014-03-09 04:30+0900\n"
+"Last-Translator: Shinjo Park <kde@peremen.name>\n"
+"Language-Team: Korean <kde-kr@kde.org>\n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#, kde-format
+msgctxt "NAME OF TRANSLATORS"
+msgid "Your names"
+msgstr "박신조"
+
+#, kde-format
+msgctxt "EMAIL OF TRANSLATORS"
+msgid "Your emails"
+msgstr "kde@peremen.name"
+
+#: src/filetransfer-handler.cpp:90
+#, kde-format
+msgctxt "This is the download directory in user's home"
+msgid "Downloads"
+msgstr "다운로드"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:136
+#: src/handle-outgoing-file-transfer-channel-job.cpp:116
+#, kde-format
+msgid "Invalid channel"
+msgstr "잘못된 채널"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:145
+#: src/handle-outgoing-file-transfer-channel-job.cpp:125
+#, kde-format
+msgid "Channel is not ready"
+msgstr "채널이 준비되지 않았음"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:213
+#, kde-format
+msgid "Incoming file exists"
+msgstr "받는 파일이 존재함"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:272
+#, kde-format
+msgid "Unknown Error"
+msgstr "알 수 없는 오류"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:290
+#, kde-format
+msgid "Would you like to resume partial download?"
+msgstr "부분 다운로드를 다시 시작하시겠습니까?"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:409
+#: src/handle-incoming-file-transfer-channel-job.cpp:463
+#, kde-format
+msgid "Incoming file transfer"
+msgstr "받는 파일 전송 요청"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:410
+#, kde-format
+msgid "From"
+msgstr "보낸 사람"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:411
+#: src/handle-outgoing-file-transfer-channel-job.cpp:179
+#, kde-format
+msgid "Filename"
+msgstr "파일 이름"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:428
+#, kde-format
+msgid "Impossible to resume file transfer. Restarting."
+msgstr "파일 전송을 다시 시작할 수 없습니다. 처음부터 다시 시작합니다."
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:450
+#: src/handle-outgoing-file-transfer-channel-job.cpp:225
+#, kde-format
+msgid "An unknown error occurred"
+msgstr "알 수 없는 오류가 발생했습니다."
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:470
+#, kde-format
+msgid "Incoming file transfer was canceled."
+msgstr "파일 수신이 취소되었습니다."
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:507
+#, kde-format
+msgid "Unable to accept file"
+msgstr "파일을 받을 수 없음"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:520
+#, kde-format
+msgid "Cannot cancel incoming file transfer"
+msgstr "받는 파일 전송 요청을 취소할 수 없음"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:533
+#: src/handle-outgoing-file-transfer-channel-job.cpp:309
+#, kde-format
+msgid "File transfer invalidated. %1"
+msgstr "파일 전송이 무효화되었습니다. %1"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:134
+#, kde-format
+msgid "URI property is missing"
+msgstr "URI 속성이 없음"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:142
+#, kde-format
+msgid "This is not a local file"
+msgstr "로컬 파일이 아님"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:177
+#: src/handle-outgoing-file-transfer-channel-job.cpp:230
+#, kde-format
+msgid "Outgoing file transfer"
+msgstr "보내는 파일 전송"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:178
+#, kde-format
+msgid "To"
+msgstr "받는 사람"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:235
+#, kde-format
+msgid "Outgoing file transfer was canceled."
+msgstr "파일 발신이 취소되었습니다."
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:283
+#, kde-format
+msgid "Cannot provide file"
+msgstr "파일을 제공할 수 없음"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:296
+#, kde-format
+msgid "Cannot cancel outgoing file transfer"
+msgstr "보내는 파일 전송 요청을 취소할 수 없음"
+
+#: src/main.cpp:36
+#, kde-format
+msgid "Telepathy File Transfer Handler"
+msgstr "Telepathy 파일 전송 핸들러"
+
+#: src/main.cpp:38
+#, kde-format
+msgid "Handles your Telepathy file transfers"
+msgstr "Telepathy 파일 전송 처리기"
+
+#: src/main.cpp:40
+#, kde-format
+msgid ""
+"Copyright (C) 2010, 2011, 2012 Daniele E. Domenichelli <daniele."
+"domenichelli@gmail.com>"
+msgstr ""
+"Copyright (C) 2010, 2011, 2012 Daniele E. Domenichelli <daniele."
+"domenichelli@gmail.com>"
+
+#: src/main.cpp:41
+#, kde-format
+msgid "Daniele E. Domenichelli"
+msgstr "Daniele E. Domenichelli"
+
+#: src/main.cpp:42
+#, kde-format
+msgid "Developer"
+msgstr "개발자"
+
+#: src/main.cpp:46
+#, kde-format
+msgid "Alin M Elena"
+msgstr "Alin M Elena"
+
+#: src/main.cpp:46 src/main.cpp:47 src/main.cpp:48 src/main.cpp:49
+#: src/main.cpp:50 src/main.cpp:51 src/main.cpp:52
+#, kde-format
+msgid "Contributor"
+msgstr "기여자"
+
+#: src/main.cpp:47
+#, kde-format
+msgid "Dario Freddi"
+msgstr "Dario Freddi"
+
+#: src/main.cpp:48
+#, kde-format
+msgid "David Edmundson"
+msgstr "David Edmundson"
+
+#: src/main.cpp:49
+#, kde-format
+msgid "George Kiagiadakis"
+msgstr "George Kiagiadakis"
+
+#: src/main.cpp:50
+#, kde-format
+msgid "Martin Klapetek"
+msgstr "Martin Klapetek"
+
+#: src/main.cpp:51
+#, kde-format
+msgid "Andrea Scarpino"
+msgstr "Andrea Scarpino"
+
+#: src/main.cpp:52
+#, kde-format
+msgid "Dan Vrátil"
+msgstr "Dan Vrátil"
+
+#: src/telepathy-base-job.cpp:120
+#, kde-format
+msgid "Telepathy reported an error while performing the requested operation:"
+msgid_plural ""
+"Telepathy reported %1 errors while performing the requested operation:"
+msgstr[0] "Telepathy가 요청한 작업을 처리하는 중 오류 %1개를 보고했습니다:"
+
+#: src/telepathy-base-job.cpp:127
+#, kde-format
+msgctxt "The following format is: ' - <error name>: <error message>'"
+msgid " - %1: %2"
+msgstr " - %1: %2"

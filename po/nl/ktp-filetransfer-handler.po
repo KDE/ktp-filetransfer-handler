@@ -1,0 +1,242 @@
+# Copyright (C) YEAR This_file_is_part_of_KDE
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Freek de Kruijf <freekdekruijf@kde.nl>, 2012, 2013, 2018.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2019-05-20 03:11+0200\n"
+"PO-Revision-Date: 2018-08-30 13:03+0100\n"
+"Last-Translator: Freek de Kruijf <freekdekruijf@kde.nl>\n"
+"Language-Team: Dutch <kde-i18n-nl@kde.org>\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Lokalize 2.0\n"
+
+#, kde-format
+msgctxt "NAME OF TRANSLATORS"
+msgid "Your names"
+msgstr "Freek de Kruijf"
+
+#, kde-format
+msgctxt "EMAIL OF TRANSLATORS"
+msgid "Your emails"
+msgstr "freekdekruijf@kde.nl"
+
+#: src/filetransfer-handler.cpp:90
+#, kde-format
+msgctxt "This is the download directory in user's home"
+msgid "Downloads"
+msgstr "Downloads"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:136
+#: src/handle-outgoing-file-transfer-channel-job.cpp:116
+#, kde-format
+msgid "Invalid channel"
+msgstr "Ongeldig kanaal"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:145
+#: src/handle-outgoing-file-transfer-channel-job.cpp:125
+#, kde-format
+msgid "Channel is not ready"
+msgstr "Kanaal is niet gereed"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:213
+#, kde-format
+msgid "Incoming file exists"
+msgstr "Inkomend bestand bestaat al"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:272
+#, kde-format
+msgid "Unknown Error"
+msgstr "Onbekende fout"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:290
+#, kde-format
+msgid "Would you like to resume partial download?"
+msgstr "Wilt u een gedeeltelijke download hervatten?"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:409
+#: src/handle-incoming-file-transfer-channel-job.cpp:463
+#, kde-format
+msgid "Incoming file transfer"
+msgstr "Inkomende bestandsoverdracht"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:410
+#, kde-format
+msgid "From"
+msgstr "Van"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:411
+#: src/handle-outgoing-file-transfer-channel-job.cpp:179
+#, kde-format
+msgid "Filename"
+msgstr "Bestandsnaam"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:428
+#, kde-format
+msgid "Impossible to resume file transfer. Restarting."
+msgstr "De bestandsoverdracht hervatten is onmogelijk. Opnieuw opstarten."
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:450
+#: src/handle-outgoing-file-transfer-channel-job.cpp:225
+#, kde-format
+msgid "An unknown error occurred"
+msgstr "Er is een onbekende fout opgetreden"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:470
+#, kde-format
+msgid "Incoming file transfer was canceled."
+msgstr "Inkomende bestandsoverdracht is geannuleerd."
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:507
+#, kde-format
+msgid "Unable to accept file"
+msgstr "Bestand accepteren lukt niet"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:520
+#, kde-format
+msgid "Cannot cancel incoming file transfer"
+msgstr "Inkomende bestandsoverdracht kan niet worden geannuleerd"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:533
+#: src/handle-outgoing-file-transfer-channel-job.cpp:309
+#, kde-format
+msgid "File transfer invalidated. %1"
+msgstr "Bestandsoverdracht ongeldig gemaakt. %1"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:134
+#, kde-format
+msgid "URI property is missing"
+msgstr "Eigenschap van URI ontbreekt"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:142
+#, kde-format
+msgid "This is not a local file"
+msgstr "Dit is geen lokaal bestand"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:177
+#: src/handle-outgoing-file-transfer-channel-job.cpp:230
+#, kde-format
+msgid "Outgoing file transfer"
+msgstr "Uitgaande bestandsoverdracht"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:178
+#, kde-format
+msgid "To"
+msgstr "Naar"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:235
+#, kde-format
+msgid "Outgoing file transfer was canceled."
+msgstr "Uitgaande bestandsoverdracht is geannuleerd."
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:283
+#, kde-format
+msgid "Cannot provide file"
+msgstr "Kan bestand niet leveren"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:296
+#, kde-format
+msgid "Cannot cancel outgoing file transfer"
+msgstr "Uitgaande bestandsoverdracht kan niet worden geannuleerd"
+
+#: src/main.cpp:36
+#, kde-format
+msgid "Telepathy File Transfer Handler"
+msgstr "Programma voor bestandsoverdracht van Telepathy"
+
+#: src/main.cpp:38
+#, kde-format
+msgid "Handles your Telepathy file transfers"
+msgstr "Doet uw bestandsoverdracht in Telepathy"
+
+#: src/main.cpp:40
+#, kde-format
+msgid ""
+"Copyright (C) 2010, 2011, 2012 Daniele E. Domenichelli <daniele."
+"domenichelli@gmail.com>"
+msgstr ""
+"Copyright (C) 2010, 2011, 2012 Daniele E. Domenichelli <daniele."
+"domenichelli@gmail.com>"
+
+#: src/main.cpp:41
+#, kde-format
+msgid "Daniele E. Domenichelli"
+msgstr "Daniele E. Domenichelli"
+
+#: src/main.cpp:42
+#, kde-format
+msgid "Developer"
+msgstr "Ontwikkelaar"
+
+#: src/main.cpp:46
+#, kde-format
+msgid "Alin M Elena"
+msgstr "Alin M Elena"
+
+#: src/main.cpp:46 src/main.cpp:47 src/main.cpp:48 src/main.cpp:49
+#: src/main.cpp:50 src/main.cpp:51 src/main.cpp:52
+#, kde-format
+msgid "Contributor"
+msgstr "Medewerker"
+
+#: src/main.cpp:47
+#, kde-format
+msgid "Dario Freddi"
+msgstr "Dario Freddi"
+
+#: src/main.cpp:48
+#, kde-format
+msgid "David Edmundson"
+msgstr "David Edmundson"
+
+#: src/main.cpp:49
+#, kde-format
+msgid "George Kiagiadakis"
+msgstr "George Kiagiadakis"
+
+#: src/main.cpp:50
+#, kde-format
+msgid "Martin Klapetek"
+msgstr "Martin Klapetek"
+
+#: src/main.cpp:51
+#, kde-format
+msgid "Andrea Scarpino"
+msgstr "Andrea Scarpino"
+
+#: src/main.cpp:52
+#, kde-format
+msgid "Dan Vrátil"
+msgstr "Dan Vrátil"
+
+#: src/telepathy-base-job.cpp:120
+#, kde-format
+msgid "Telepathy reported an error while performing the requested operation:"
+msgid_plural ""
+"Telepathy reported %1 errors while performing the requested operation:"
+msgstr[0] ""
+"Telepathy rapporteerde een fout tijdens het uitvoeren van de gevraagde "
+"bewerking:"
+msgstr[1] ""
+"Telepathy rapporteerde %1 fouten tijdens het uitvoeren van de gevraagde "
+"bewerking:"
+
+#: src/telepathy-base-job.cpp:127
+#, kde-format
+msgctxt "The following format is: ' - <error name>: <error message>'"
+msgid " - %1: %2"
+msgstr " - %1: %2"
+
+#~ msgid "File transfer handler is exiting. Cannot start job"
+#~ msgstr ""
+#~ "Programma voor bestandsoverdracht is bezig te stoppen. Kan taak niet "
+#~ "starten"
+
+#~ msgid "Cannot handle outgoing file transfer without URI"
+#~ msgstr "Kan uitgaande bestandsoverdracht niet afhandelen zonder URI"

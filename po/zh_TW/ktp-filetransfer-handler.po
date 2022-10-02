@@ -1,0 +1,229 @@
+# Copyright (C) YEAR This_file_is_part_of_KDE
+# This file is distributed under the same license as the PACKAGE package.
+# Franklin Weng <franklin@goodhorse.idv.tw>, 2012, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2019-05-20 03:11+0200\n"
+"PO-Revision-Date: 2013-10-03 16:37+0800\n"
+"Last-Translator: Franklin Weng <franklin at goodhorse dot idv dot tw>\n"
+"Language-Team: Chinese Traditional <kde-tw@googlegroups.com>\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Lokalize 1.5\n"
+
+#, kde-format
+msgctxt "NAME OF TRANSLATORS"
+msgid "Your names"
+msgstr "Frank Weng (a.k.a. Franklin)"
+
+#, kde-format
+msgctxt "EMAIL OF TRANSLATORS"
+msgid "Your emails"
+msgstr "franklin@goodhorse.idv.tw"
+
+#: src/filetransfer-handler.cpp:90
+#, kde-format
+msgctxt "This is the download directory in user's home"
+msgid "Downloads"
+msgstr "下載"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:136
+#: src/handle-outgoing-file-transfer-channel-job.cpp:116
+#, kde-format
+msgid "Invalid channel"
+msgstr "不合法的頻道"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:145
+#: src/handle-outgoing-file-transfer-channel-job.cpp:125
+#, kde-format
+msgid "Channel is not ready"
+msgstr "頻道未就緒"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:213
+#, kde-format
+msgid "Incoming file exists"
+msgstr "要傳進來的檔案已存在"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:272
+#, kde-format
+msgid "Unknown Error"
+msgstr "未知的錯誤"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:290
+#, kde-format
+msgid "Would you like to resume partial download?"
+msgstr "您要回復先前的部份下載嗎？"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:409
+#: src/handle-incoming-file-transfer-channel-job.cpp:463
+#, kde-format
+msgid "Incoming file transfer"
+msgstr "進來的檔案傳輸"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:410
+#, kde-format
+msgid "From"
+msgstr "從"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:411
+#: src/handle-outgoing-file-transfer-channel-job.cpp:179
+#, kde-format
+msgid "Filename"
+msgstr "檔案名稱"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:428
+#, kde-format
+msgid "Impossible to resume file transfer. Restarting."
+msgstr "無法回復檔案傳輸。重新開始下載。"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:450
+#: src/handle-outgoing-file-transfer-channel-job.cpp:225
+#, kde-format
+msgid "An unknown error occurred"
+msgstr "發生未知的錯誤"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:470
+#, kde-format
+msgid "Incoming file transfer was canceled."
+msgstr "進來的檔案傳輸已取消。"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:507
+#, kde-format
+msgid "Unable to accept file"
+msgstr "無法接受檔案"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:520
+#, kde-format
+msgid "Cannot cancel incoming file transfer"
+msgstr "無法取消進來的檔案傳輸"
+
+#: src/handle-incoming-file-transfer-channel-job.cpp:533
+#: src/handle-outgoing-file-transfer-channel-job.cpp:309
+#, kde-format
+msgid "File transfer invalidated. %1"
+msgstr "檔案傳輸未通過確認。%1"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:134
+#, kde-format
+msgid "URI property is missing"
+msgstr "URI 屬性遺失"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:142
+#, kde-format
+msgid "This is not a local file"
+msgstr "這不是本地端檔案"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:177
+#: src/handle-outgoing-file-transfer-channel-job.cpp:230
+#, kde-format
+msgid "Outgoing file transfer"
+msgstr "送出的檔案傳輸"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:178
+#, kde-format
+msgid "To"
+msgstr "到"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:235
+#, kde-format
+msgid "Outgoing file transfer was canceled."
+msgstr "送出的檔案傳輸已取消。"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:283
+#, kde-format
+msgid "Cannot provide file"
+msgstr "無法提供檔案"
+
+#: src/handle-outgoing-file-transfer-channel-job.cpp:296
+#, kde-format
+msgid "Cannot cancel outgoing file transfer"
+msgstr "無法取消送出的檔案傳輸"
+
+#: src/main.cpp:36
+#, kde-format
+msgid "Telepathy File Transfer Handler"
+msgstr "Telepathy 檔案傳輸處理器"
+
+#: src/main.cpp:38
+#, kde-format
+msgid "Handles your Telepathy file transfers"
+msgstr "隱藏您的 Telepathy 檔案傳輸"
+
+#: src/main.cpp:40
+#, kde-format
+msgid ""
+"Copyright (C) 2010, 2011, 2012 Daniele E. Domenichelli <daniele."
+"domenichelli@gmail.com>"
+msgstr ""
+"Copyright (C) 2010, 2011, 2012 Daniele E. Domenichelli <daniele."
+"domenichelli@gmail.com>"
+
+#: src/main.cpp:41
+#, kde-format
+msgid "Daniele E. Domenichelli"
+msgstr "Daniele E. Domenichelli"
+
+#: src/main.cpp:42
+#, kde-format
+msgid "Developer"
+msgstr "開發者"
+
+#: src/main.cpp:46
+#, kde-format
+msgid "Alin M Elena"
+msgstr "Alin M Elena"
+
+#: src/main.cpp:46 src/main.cpp:47 src/main.cpp:48 src/main.cpp:49
+#: src/main.cpp:50 src/main.cpp:51 src/main.cpp:52
+#, kde-format
+msgid "Contributor"
+msgstr "貢獻者"
+
+#: src/main.cpp:47
+#, kde-format
+msgid "Dario Freddi"
+msgstr "Dario Freddi"
+
+#: src/main.cpp:48
+#, kde-format
+msgid "David Edmundson"
+msgstr "David Edmundson"
+
+#: src/main.cpp:49
+#, kde-format
+msgid "George Kiagiadakis"
+msgstr "George Kiagiadakis"
+
+#: src/main.cpp:50
+#, kde-format
+msgid "Martin Klapetek"
+msgstr "Martin Klapetek"
+
+#: src/main.cpp:51
+#, kde-format
+msgid "Andrea Scarpino"
+msgstr "Andrea Scarpino"
+
+#: src/main.cpp:52
+#, kde-format
+msgid "Dan Vrátil"
+msgstr "Dan Vrátil"
+
+#: src/telepathy-base-job.cpp:120
+#, kde-format
+msgid "Telepathy reported an error while performing the requested operation:"
+msgid_plural ""
+"Telepathy reported %1 errors while performing the requested operation:"
+msgstr[0] "Telepathy 在執行要求的操作時回報了 %1 個錯誤："
+
+#: src/telepathy-base-job.cpp:127
+#, kde-format
+msgctxt "The following format is: ' - <error name>: <error message>'"
+msgid " - %1: %2"
+msgstr " - %1：%2"
