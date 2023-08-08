@@ -236,11 +236,3 @@ msgstr[1] ""
 msgctxt "The following format is: ' - <error name>: <error message>'"
 msgid " - %1: %2"
 msgstr " - %1: %2"
-
-#~ msgid "File transfer handler is exiting. Cannot start job"
-#~ msgstr ""
-#~ "El gestor de transferències de fitxers està finalitzant. No es pot "
-#~ "iniciar el treball."
-
-#~ msgid "Cannot handle outgoing file transfer without URI"
-#~ msgstr "No es pot gestionar la transferència de fitxer sortint sense URI"
